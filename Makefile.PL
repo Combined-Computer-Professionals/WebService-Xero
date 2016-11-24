@@ -1,0 +1,34 @@
+use 5.006;
+use strict;
+use warnings;
+use ExtUtils::MakeMaker;
+
+WriteMakefile(
+    NAME             => 'CCP::Xero',
+    AUTHOR           => q{Peter Scott <peter@computerpros.com.au>},
+    VERSION_FROM     => 'lib/CCP/Xero.pm',
+    ABSTRACT_FROM    => 'lib/CCP/Xero.pm',
+    LICENSE          => 'artistic_2',
+    PL_FILES         => {},
+    MIN_PERL_VERSION => 5.006,
+    CONFIGURE_REQUIRES => {
+        'ExtUtils::MakeMaker' => 0,
+    },
+    BUILD_REQUIRES => {
+        'Test::More' => 0,
+
+    },
+    PREREQ_PM => {
+        'Config::Tiny'        => 0,
+        'Crypt::OpenSSL::RSA' => 0,
+        'File::Slurp'         => 0,
+        'XML::Simple'         => 0,
+        'Digest::MD5'         => 0,
+        'URI::Encode'         => 0,
+        'HTTP::Request'       => 0,
+        'JSON'                => 0,
+        'Data::Random'        => 0,
+    },
+    dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    clean => { FILES => 'CCP-Xero-*' },
+);

@@ -1,0 +1,21 @@
+.gitignore
+test_config.tpl
+Changes
+ignore.txt
+lib/CCP/Xero.pm
+lib/CCP/Xero/Agent.pm
+lib/CCP/Xero/Organisation.pm
+lib/CCP/Xero/Contact.pm
+lib/CCP/Xero/Invoice.pm
+lib/CCP/Xero/Item.pm
+lib/CCP/Xero/Agent/PrivateApplication.pm
+lib/CCP/Xero/Agent/PublicApplication.pm
+Makefile.PL
+MANIFEST			This list of files
+README
+t/00-load.t
+t/manifest.t
+t/pod-coverage.t
+t/pod.t
+t/01-agent.t
+xt/boilerplate.t

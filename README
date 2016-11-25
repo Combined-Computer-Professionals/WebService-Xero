@@ -17,6 +17,16 @@ To install this module, run the following commands:
 	make install
 
 
+PERL MODULE DEPENDENCIES
+
+NB: People report that they are unable to install the dependency  Crypt::OpenSSL::RSA from CPAN which
+    can be due to missing ssl libraries which can be installed as follows:
+
+  apt-get install libssl-dev ## for debian etc
+  yum install openssl-dev    ## for RH,Centos, Ubuntu etc
+
+
+
 TESTING AGAINST A LIVE APPLICATION
 
 To run tests against a live Xero Application API endpoint you need to

@@ -28,6 +28,8 @@ WriteMakefile(
         'HTTP::Request'       => 0,
         'JSON'                => 0,
         'Data::Random'        => 0,
+        'Net::OAuth'          => 0,
+        'Mozilla::CA'         => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'CCP-Xero-*' },

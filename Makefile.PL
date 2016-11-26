@@ -16,7 +16,7 @@ WriteMakefile(
     },
     BUILD_REQUIRES => {
         'Test::More' => 0,
-
+        'Config::Tiny' => 0,
     },
     PREREQ_PM => {
         'Config::Tiny'        => 0,

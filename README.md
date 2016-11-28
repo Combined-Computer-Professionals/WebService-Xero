@@ -2,7 +2,7 @@
 
 
 [![Build Status](https://travis-ci.org/pscott-au/CCP-Xero.svg?branch=master)](https://travis-ci.org/pscott-au/CCP-Xero)
-
+[![Coverage Status](https://coveralls.io/repos/github/pscott-au/CCP-Xero/badge.svg?branch=master)](https://coveralls.io/github/pscott-au/CCP-Xero?branch=master)
 
 Perl CPAN style module to simplify integration with [Xero API Applications](https://developer.xero.com)
 

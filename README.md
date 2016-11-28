@@ -1,4 +1,9 @@
 # CCP::Xero
+
+
+[![Build Status](https://travis-ci.org/pscott-au/CCP-Xero.svg?branch=master)](https://travis-ci.org/pscott-au/CCP-Xero)
+
+
 Perl CPAN style module to simplify integration with [Xero API Applications](https://developer.xero.com)
 
 Inspired by the Xero endorsed Ruby API Library [Xeroizer] 

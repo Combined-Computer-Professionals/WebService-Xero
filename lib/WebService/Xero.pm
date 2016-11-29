@@ -1,4 +1,4 @@
-package CCP::Xero;
+package WebService::Xero;
 
 use 5.006;
 use strict;
@@ -6,15 +6,15 @@ use warnings;
 
 =head1 NAME
 
-CCP::Xero - Access Xero Accounting Package Public and Private Applicaiton API
+WebService::Xero - Access Xero Accounting Package Public and Private Applicaiton API
 
 =head1 VERSION
 
-Version 0.01
+Version 0.10
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.10';
 
 
 =head1 SYNOPSIS
@@ -22,7 +22,7 @@ our $VERSION = '0.01';
 
 The Xero API is a RESTful web service and uses the OAuth (v1.0a) L<https://oauth.net/core/1.0a/> protocol to authenticate 3rd party applications.
 
-CCP::Xero aims primarily to simplify the authenticated access to Xero API service end-point by encapuslating the OAuth requirements.
+WebService::Xero aims primarily to simplify the authenticated access to Xero API service end-point by encapuslating the OAuth requirements.
 
 To enable API access see the Xero Getting started guide
 
@@ -36,10 +36,10 @@ Xero provides Private, Public and Partner Applications. This module currently su
 
 The simplest implementation uses a Private Application as follows:
 
-    use CCP::Xero::Agent::PrivateApplication;
+    use WebService::Xero::Agent::PrivateApplication;
     use Data::Dumper;
 
-    my $xero = CCP::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
+    my $xero = WebService::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
                                                           CONSUMER_SECRET => 'YOUR_OAUTH_CONSUMER_SECRET', 
                                                           KEYFILE         => "/path/to/privatekey.pem" 
                                                           );
@@ -62,8 +62,8 @@ Peter Scott, C<< <peter at computerpros.com.au> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-ccp-xero at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CCP-Xero>.  I will be notified, and then you'll
+Please report any bugs or feature requests to C<bug-WebService-Xero at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-Xero>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -73,9 +73,9 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc CCP::Xero
-    perldoc CCP::Xero::Agent::PublicApplication
-    perldoc CCP::Xero::Agent::PrivateApplication
+    perldoc WebService::Xero
+    perldoc WebService::Xero::Agent::PublicApplication
+    perldoc WebService::Xero::Agent::PrivateApplication
 
 
 You can also look for information at:
@@ -92,19 +92,19 @@ L<https://github.com/XeroAPI/XeroAPI-Schemas>
 
 =item * RT: CPAN's request tracker (report bugs here)
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=CCP-Xero>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=WebService-Xero>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/CCP-Xero>
+L<http://annocpan.org/dist/WebService-Xero>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/CCP-Xero>
+L<http://cpanratings.perl.org/d/WebService-Xero>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/CCP-Xero/>
+L<http://search.cpan.org/dist/WebService-Xero/>
 
 =back
 
@@ -155,4 +155,4 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of CCP::Xero
+1; # End of WebService::Xero

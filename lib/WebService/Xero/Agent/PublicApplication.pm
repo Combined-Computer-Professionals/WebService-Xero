@@ -1,9 +1,11 @@
-package CCP::Xero::Agent::PublicApplication;
-use base ('CCP::Xero::Agent');
+package WebService::Xero::Agent::PublicApplication;
+
 
 use 5.006;
 use strict;
 use warnings;
+use base ('WebService::Xero::Agent');
+
 use Crypt::OpenSSL::RSA;
 use Digest::MD5 qw( md5_base64 );
 
@@ -14,15 +16,15 @@ $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
 =head1 NAME
 
-CCP::Xero::Agent::PrivateApplication
+WebService::Xero::Agent::PrivateApplication
 
 =head1 VERSION
 
-Version 0.01
+Version 0.10
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.10';
 
 
 =head1 SYNOPSIS
@@ -30,33 +32,45 @@ our $VERSION = '0.01';
 Public Applications
 
 Public applications use a 3-legged authorisation process. A user will need to authorise your application against each organisation that 
-you want access to. 
-Your application can have access to many organisations at once by going through the authorisation process for each organisation.
+you want access to. For a great description of the 3-legged flow see L<http://oauthbible.com/#oauth-10a-three-legged> .
 
 Public Applications require the negotiation of a token by directing the user to Xero to authenticate and accepting the callback as the
 user is redirected to your application.
-To implement you need to persist token details across multiple web page requests in your application.
+
+To implement you need to persist token details across multiple user web page requests in your application.
+
+To fully understand the integration implementation requirements it is useful to familiarise yourself with the terminology.
+
+=head3 OAUTH 1.0a TERMINOLOGY
+
+User              A user who has an account of the Service Provider (Xero) and tries to use the Consumer. (The API Application config in Xero API Dev Center .)
+Service Provider  Service that provides Open API that uses OAuth. (Xero.)
+Consumer          An application or web service that wants to use functions of the Service Provider through OAuth authentication. (End User)
+Request Token     A value that a Consumer uses to be authorized by the Service Provider After completing authorization, it is exchanged for an Access Token. 
+                    (The identity of the guest.)
+Access Token      A value that contains a key for the Consumer to access the resource of the Service Provider. (A visitor card.)
 
 
 
-=head2 Authentication occurs in 3 steps:
+=head2 Authentication occurs in 3 steps (legs):
 
-=head3 Step 1 - Get an Unauthorised Request Token 
+=head3 Step 1 - Get an Unauthorised Request Token  
 
-    use CCP::Xero::Agent::PublicApplication;
+    use WebService::Xero::Agent::PublicApplication;
 
-    my $xero = CCP::Xero::Agent::PublicApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
+    my $xero = WebService::Xero::Agent::PublicApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
                                                           CONSUMER_SECRET => 'YOUR_OAUTH_CONSUMER_SECRET', 
                                                           CALLBACK_URL    => 'http://localhost/xero_tester.cgi'
                                                           );
     my $callback_url = 'http://localhost/cgi-bin/test_xero_public_application.cgi'; ## NB Domain must be configured in Xero App Config
-    $xero->get_request_token(  $callback_url ); ## This generates the token to include in the user redirect
+    $xero->get_request_token(  $callback_url ); ## This generates the token to include in the user redirect (A)
     ## NB need to store $xero->{oauth_token},$xero->{oauth_token_secret} in persistent storage as will be required at later steps for this session.
-    print $xero->{login_url}; ## need to include a link to this URL in your app for the user to click on
+    print $xero->{login_url}; ## need to include a link to this URL in your app for the user to click on    (B)
 
 =head3 Step 2 - Redirect User
 
-    user click on link to $xero->{login_url} which takes them to Xero - when they authorise your app they are redirected back to your callback URL
+    user click on link to $xero->{login_url} which takes them to Xero - when they authorise your app they are redirected back to your callback URL (C)(D)
+
 
 =head3 Step 3 - Swap a Request Token for an Access Token
 
@@ -66,20 +80,35 @@ To implement you need to persist token details across multiple web page requests
    my $org            = $cgi->param('org');
    my $oauth_token    = $cgi->url_param('oauth_token');
 
-   $xero->get_access_token( $oauth_token, $oauth_verifier, $org, $stored_token_secret, $stored_oauth_token );
+   $xero->get_access_token( $oauth_token, $oauth_verifier, $org, $stored_token_secret, $stored_oauth_token ); ## (E)(F)
 
 =head3 Step 4 - Access the Xero API using the access token 
 
-    my $contact_struct = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts' );  
+    my $contact_struct = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts' );  ## (G)
 
+
+=head2 Other Notes
 
 The access token received will expire after 30 minutes. If you want access for longer you will need the user to re-authorise your application.
 
 Xero API Applications have a limit of 1,000/day and 60/minute request per organisation.
 
+Your application can have access to many organisations at once by going through the authorisation process for each organisation.
 
 
-=head1 Xero URLs used for authorisation and using the API
+
+
+
+
+
+
+
+
+
+
+
+
+=head3 Xero URLs used for authorisation and using the API
 
 Get an Unauthorised Request Token:  https://api.xero.com/oauth/RequestToken
 Redirect a user:  https://api.xero.com/oauth/Authorize
@@ -97,15 +126,12 @@ https://app.xero.com/Application
 
 =head1 METHODS
 
-
-=head2 _validate_agent()
-
 =cut
 
 sub _validate_agent 
 {
   my ( $self  ) = @_;
-  ## TODO: validate required CCP::Xero::Agent properties required for a public application.
+  ## TODO: validate required WebService::Xero::Agent properties required for a public application.
 
   return $self;
 }
@@ -134,7 +160,7 @@ sub get_request_token ## FOR PUBLIC APP (from old Xero::get_auth_token)
     request_method   => 'GET',
     signature_method => 'HMAC-SHA1',
     timestamp        => time,
-    nonce => 'ccp' . md5_base64( join('', rand_chars(size => 8, set => 'alphanumeric')) . time ), #$nonce
+    nonce            => 'ccp' . md5_base64( join('', rand_chars(size => 8, set => 'alphanumeric')) . time ), #$nonce
   );
   $access->sign();
   #warn $access->to_url."\n";
@@ -242,14 +268,32 @@ sub get_access_token  ## FOR PUBLIC APP
 #####################################
 
 
+
+=head2 do_xero_api_call()
+
+  INPUT PARAMETERS AS A LIST ( NOT NAMED )
+
+* $uri (required)    - the API endpoint URI ( eg 'https://api.xero.com/api.xro/2.0/Contacts/')
+* $method (optional) - 'POST' or 'GET' .. PUT not currently supported
+* $xml (optional)    - the payload for POST updates as XML
+
+  RETURNS
+
+    The response is requested in JSON format which is then processed into a Perl structure that
+    is returned to the caller.
+
+
+=cut 
+
+
 =head1 AUTHOR
 
 Peter Scott, C<< <peter at computerpros.com.au> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-ccp-xero at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CCP-Xero>.  I will be notified, and then you'll
+Please report any bugs or feature requests to C<bug-webservice-xero at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-Xero>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -259,7 +303,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc CCP::Xero::Agent::PublicApplication
+    perldoc WebService::Xero::Agent::PublicApplication
 
 
 You can also look for information at:
@@ -329,6 +373,14 @@ CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+
+
+=begin HTML
+
+<p><img src="https://oauth.net/core/diagram.png"></p>
+
+=end HTML
+
 =cut
 
-1; # End of CCP::Xero
+1; # End of WebService::Xero

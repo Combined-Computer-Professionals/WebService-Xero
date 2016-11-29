@@ -1,4 +1,4 @@
-package CCP::Xero::Invoice;
+package WebService::Xero::Invoice;
 
 use 5.006;
 use strict;
@@ -7,15 +7,15 @@ use warnings;
 use Data::Dumper;
 =head1 NAME
 
-CCP::Xero::Invoice - encapsulates a Xero API Invoice record
+WebService::Xero::Invoice - encapsulates a Xero API Invoice record
 
 =head1 VERSION
 
-Version 0.01
+Version 0.10
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.10';
 
 our @PARAMS = qw/Date DueDate Status LineAmountTypes SubTotal TotalTax Total UpdatedDateUTC CurrencyCode Type InvoiceID InvoiceNumber AmountDue AmountPaid AmountCredited CurrencyRate/;
 
@@ -25,12 +25,12 @@ our @ARRAY_PARAMS = qw//; ## TODO: implement
 =head1 SYNOPSIS
 
 
-Quick summary of what the module does.
+Just a wrapper for Xero Invoice data structure.
 
 Perhaps a little code snippet.
 
-    use  CCP::Xero::Invoice;
-    my $foo =  CCP::Xero::Invoice->new();
+    use  WebService::Xero::Invoice;
+    my $foo =  WebService::Xero::Invoice->new();
     ...
 
 =head1 TODO
@@ -67,9 +67,9 @@ sub create_new_through_agent
 {
   my ( $self, %params ) = @_;
 
-  die('need a valida agent parameter') unless (  ref( $params{agent} ) =~ /Agent/m  ); ## 
+  croak('need a valid agent parameter') unless (  ref( $params{agent} ) =~ /Agent/m  ); ## 
 
-  my $new = CCP::Xero::Invoice->new( %params );
+  my $new = WebService::Xero::Invoice->new( %params );
 
   ## TODO: Create 
   return $new;
@@ -79,7 +79,7 @@ sub create_new_through_agent
 =head2 new_from_api_data()
 
   creates a new instance from the data provided by querying the API organisation end point 
-  ( typically handled by CCP::Xero::Agent->do_xero_api_call() )
+  ( typically handled by WebService::Xero::Agent->do_xero_api_call() )
 
   Example Contact Queries using Xero Agent that return Data consumable by this method:
     https://api.xero.com/api.xro/2.0/Contacts
@@ -118,7 +118,7 @@ sub new_from_api_data
 sub get_pdf
 {
   my ( $self ) = @_;
-
+  return $self->error('Not implemented');
   ## TODO: confirm that we have a populated instance and id and if so - request as PDF
 }
 
@@ -148,8 +148,8 @@ Peter Scott, C<< <peter at computerpros.com.au> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-ccp-xero at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CCP-Xero>.  I will be notified, and then you'll
+Please report any bugs or feature requests to C<bug-webservice-xero at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-Xero>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -167,7 +167,7 @@ To track progress on this feature request, or to add your support to it, please 
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc CCP::Xero::Invoice
+    perldoc WebService::Xero::Invoice
 
 
 You can also look for information at:
@@ -228,4 +228,4 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of CCP::Xero
+1; # End of WebService::Xero

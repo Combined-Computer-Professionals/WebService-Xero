@@ -1,10 +1,12 @@
-CCP-Xero
+WebService-Xero
+
+VERSION 1.10
 
 Inspired by the Xero endorsed Ruby API Library https://github.com/waynerobinson/xeroizer/ 
 and the CPAN Net::Xero module,
 this Perl module aims to simplify integration with Xero API Applications
 points for Public, Private and in the future Partner application services.
-CCP::Xero modules primarily encapsulate the OAuth (v1.0a) access control.
+WebService::Xero modules primarily encapsulate the OAuth (v1.0a) access control.
 
 
 INSTALLATION
@@ -41,7 +43,7 @@ SUPPORT AND DOCUMENTATION
 After installing, you can find documentation for this module with the
 perldoc command.
 
-    perldoc CCP::Xero
+    perldoc WebService::Xero
 
 You can also look for information at:
 

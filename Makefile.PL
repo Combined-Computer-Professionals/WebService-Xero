@@ -4,10 +4,10 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME             => 'CCP::Xero',
+    NAME             => 'WebService::Xero',
     AUTHOR           => q{Peter Scott <peter@computerpros.com.au>},
-    VERSION_FROM     => 'lib/CCP/Xero.pm',
-    ABSTRACT_FROM    => 'lib/CCP/Xero.pm',
+    VERSION_FROM     => 'lib/WebService/Xero.pm',
+    ABSTRACT_FROM    => 'lib/WebService/Xero.pm',
     LICENSE          => 'artistic_2',
     PL_FILES         => {},
     MIN_PERL_VERSION => 5.006,
@@ -16,7 +16,7 @@ WriteMakefile(
     },
     BUILD_REQUIRES => {
         'Test::More' => 0,
-
+        'Config::Tiny' => 0,
     },
     PREREQ_PM => {
         'Config::Tiny'        => 0,
@@ -32,5 +32,5 @@ WriteMakefile(
         'Mozilla::CA'         => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean => { FILES => 'CCP-Xero-*' },
+    clean => { FILES => 'WebService-Xero-*' },
 );

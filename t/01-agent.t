@@ -15,14 +15,14 @@ use Config::Tiny;
 
 
 BEGIN {
-    use_ok( 'CCP::Xero::Agent' ) || print "Bail out!\n";
-    use_ok( 'CCP::Xero::Contact' ) || print "Bail out!\n";
-    use_ok( 'CCP::Xero::Invoice' ) || print "Bail out!\n";
-    use_ok( 'CCP::Xero::Item' ) || print "Bail out!\n";
+    use_ok( 'WebService::Xero::Agent' ) || print "Bail out!\n";
+    use_ok( 'WebService::Xero::Contact' ) || print "Bail out!\n";
+    use_ok( 'WebService::Xero::Invoice' ) || print "Bail out!\n";
+    use_ok( 'WebService::Xero::Item' ) || print "Bail out!\n";
 
-    use_ok( 'CCP::Xero::Agent::PrivateApplication' ) || print "Bail out!\n";
-    use_ok( 'CCP::Xero::Agent::PublicApplication' ) || print "Bail out!\n";
-    #ok( my $xero = CCP::Xero::Agent->new(), 'New Xero::Agent');
+    use_ok( 'WebService::Xero::Agent::PrivateApplication' ) || print "Bail out!\n";
+    use_ok( 'WebService::Xero::Agent::PublicApplication' ) || print "Bail out!\n";
+    #ok( my $xero = WebService::Xero::Agent->new(), 'New Xero::Agent');
     ok( 1==1, 'New Xero::Agent');
         SKIP: {
             skip ("no config - skipping agent tests", 10) unless $ENV{XERO_TEST_CONFIG} ;
@@ -47,7 +47,7 @@ BEGIN {
                   #ok( $config->{PRIVATE_APPLICATION}{CONSUMER_KEY} ne 'YOUR_OAUTH_CONSUMER_KEY', 'Private API Consumer key not left as default' );
                   ok ( my $pk_text = read_file( $config->{PRIVATE_APPLICATION}{KEYFILE} ), 'load private key file');
                   ok ( my $pko = Crypt::OpenSSL::RSA->new_private_key( $pk_text ), 'Generate RSA Object from private key file' );
-                  ok ( my $xero = CCP::Xero::Agent::PrivateApplication->new( 
+                  ok ( my $xero = WebService::Xero::Agent::PrivateApplication->new( 
                                                           NAME            => $config->{PRIVATE_APPLICATION}{NAME},
                                                           CONSUMER_KEY    => $config->{PRIVATE_APPLICATION}{CONSUMER_KEY}, 
                                                           CONSUMER_SECRET => $config->{PRIVATE_APPLICATION}{CONSUMER_SECRET}, 
@@ -65,26 +65,26 @@ BEGIN {
 
                   ## TEST SEACH FOR RODNEY ( requires specific Xero instance )
                   ##   Name.Contains("Peter")
-                  #ok( my $contact = CCP::Xero::Contact->new_from_api_data(  $xero->do_xero_api_call( q{https://api.xero.com/api.xro/2.0/Contacts?where=Name.Contains("Antique")} ) ) , 'Get Contact Peter');
+                  #ok( my $contact = WebService::Xero::Contact->new_from_api_data(  $xero->do_xero_api_call( q{https://api.xero.com/api.xro/2.0/Contacts?where=Name.Contains("Antique")} ) ) , 'Get Contact Peter');
                   #diag(  $contact->as_text() );
 
 
                   ## TEST INVOICES
                   
                   my $filter = '';# uri_encode(qq{Contact.ContactID=Guid("$contact->{ContactID}")});
-                  ok( my $invoices = CCP::Xero::Invoice->new_from_api_data(  $xero->do_xero_api_call( qq{https://api.xero.com/api.xro/2.0/Invoices?where=$filter} ) ) , "Get Invoices");
+                  ok( my $invoices = WebService::Xero::Invoice->new_from_api_data(  $xero->do_xero_api_call( qq{https://api.xero.com/api.xro/2.0/Invoices?where=$filter} ) ) , "Get Invoices");
                   diag(  "Got " . scalar(@$invoices) . " invoices '" );
 
                   ## GET PRODUCTS
                   #$filter = uri_encode(qq{ItemID=Guid("7f2f877b-0c3d-4004-8693-8fb1c06e21d7")});
                   #$filter = uri_encode(qq{Code="SZG8811-CUSTOM"});
-                  ok( my $items = CCP::Xero::Item->new_from_api_data(  $xero->do_xero_api_call( qq{https://api.xero.com/api.xro/2.0/Items?where=$filter} ) ) , "Get Invoices ");
+                  ok( my $items = WebService::Xero::Item->new_from_api_data(  $xero->do_xero_api_call( qq{https://api.xero.com/api.xro/2.0/Items?where=$filter} ) ) , "Get Invoices ");
                   my $txt = ''; 
                   if ( ref($items) eq 'ARRAY' ) { foreach my $item(@$items) { $txt.=$item->as_text(); }; } else { $txt = $items->as_text(); }
                   diag( "\n\nFOUND ITEM\n" . $txt );
 
                   ## CREATE INVOICE
-                  #my $new_invoice = CCP::Xero::Invoice->new();
+                  #my $new_invoice = WebService::Xero::Invoice->new();
 
 
 

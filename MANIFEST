@@ -2,14 +2,14 @@
 test_config.tpl
 Changes
 ignore.txt
-lib/CCP/Xero.pm
-lib/CCP/Xero/Agent.pm
-lib/CCP/Xero/Organisation.pm
-lib/CCP/Xero/Contact.pm
-lib/CCP/Xero/Invoice.pm
-lib/CCP/Xero/Item.pm
-lib/CCP/Xero/Agent/PrivateApplication.pm
-lib/CCP/Xero/Agent/PublicApplication.pm
+lib/WebService/Xero.pm
+lib/WebService/Xero/Agent.pm
+lib/WebService/Xero/Organisation.pm
+lib/WebService/Xero/Contact.pm
+lib/WebService/Xero/Invoice.pm
+lib/WebService/Xero/Item.pm
+lib/WebService/Xero/Agent/PrivateApplication.pm
+lib/WebService/Xero/Agent/PublicApplication.pm
 Makefile.PL
 MANIFEST			This list of files
 README

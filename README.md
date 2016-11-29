@@ -1,10 +1,16 @@
-# CCP::Xero
+# WebService::Xero
+
+
+[![Build Status](https://travis-ci.org/pscott-au/CCP-Xero.svg?branch=master)](https://travis-ci.org/pscott-au/CCP-Xero)
+[![Coverage Status](https://coveralls.io/repos/github/pscott-au/CCP-Xero/badge.svg?branch=master)](https://coveralls.io/github/pscott-au/CCP-Xero?branch=master)
+[![Join the chat at https://gitter.im/CCP-AU/](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/CCP-AU?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badgeP-AU/Lobby?source=orgpage)
+
 Perl CPAN style module to simplify integration with [Xero API Applications](https://developer.xero.com)
 
 Inspired by the Xero endorsed Ruby API Library [Xeroizer] 
 and the CPAN [Net::Xero](http://search.cpan.org/~elliott/Net-Xero-0.43/lib/Net/Xero.pm) module, this Perl module aims to simplify integration with Xero API Applications
 points for Public, Private and in the future Partner application services.
-CCP::Xero modules primarily encapsulate the [OAuth (v1.0a) access control protocol as described by Cubrid](http://www.cubrid.org/blog/dev-platform/dancing-with-oauth-understanding-how-authorization-works/) .
+WebService::Xero modules primarily encapsulate the [OAuth (v1.0a) access control protocol as described by Cubrid](http://www.cubrid.org/blog/dev-platform/dancing-with-oauth-understanding-how-authorization-works/) .
 The module is in the CCP namespace because it was extracted from a larger application.
 
 
@@ -68,10 +74,10 @@ An example of a basic agent accessing a private Xero Application.
 #!/usr/bin/perl
 use strict;
 use warnings;
-use CCP::Xero::Agent::PrivateApplication;
+use WebService::Xero::Agent::PrivateApplication;
 use Data::Dumper;
 
-my $xero = CCP::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
+my $xero = WebService::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
                                                     CONSUMER_SECRET => 'YOUR_OAUTH_CONSUMER_SECRET', 
                                                     KEYFILE         => "/path/to/privatekey.pem" 
                                                           );
@@ -82,7 +88,7 @@ print Dumper $contact_struct; ## should contain an array of hashes containing co
 
 See perldoc for details
 ````sh
-perldoc CCP::Xero
+perldoc WebService::Xero
 ````
 
 ### Todos

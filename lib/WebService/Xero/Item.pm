@@ -1,106 +1,36 @@
-package CCP::Xero::Contact;
+package WebService::Xero::Item;
 
 use 5.006;
 use strict;
 use warnings;
-
+use Carp;
 use Data::Dumper;
 =head1 NAME
 
-CCP::Xero::Contact - encapsulates a Xero API Contact record
+WebService::Xero::Item - encapsulates a Xero API Item record
 
 =head1 VERSION
 
-Version 0.01
+Version 0.10
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.10';
 
-our @PARAMS = qw/ContactID ContactStatus Name FirstName LastName EmailAddress BankAccountDetails UpdatedDateUTC IsCustomer/;
+our @PARAMS = qw/Name ItemID Code Description UpdatedDateUTC IsTrackedAsInventory InventoryAssetAccountCode TotalCostPool QuantityOnHand IsSold IsPurchased/;
 
+our @ARRAY_PARAMS = qw//; ## TODO: implement 
 
 
 =head1 SYNOPSIS
 
 
-
-{
-  "Id": "130c072f-58b4-4c3a-9779-156897162abb",
-  "Status": "OK",
-  "ProviderName": "Xero API Previewer",
-  "DateTimeUTC": "\/Date(1479629008441)\/",
-  "Contacts": [
-    {
-      "ContactID": "c3f837ab-2164-479e-8820-8e533afc375d",
-      "ContactStatus": "ACTIVE",
-      "Name": "Gerard Griggs",
-      "FirstName": "Gerard",
-      "LastName": "Griggs",
-      "EmailAddress": "gerard.griggs@afdfranchisee.com.au",
-      "BankAccountDetails": "",
-      "Addresses": [
-        {
-          "AddressType": "STREET",
-          "City": "",
-          "Region": "",
-          "PostalCode": "",
-          "Country": "",
-          "AttentionTo": ""
-        },
-        {
-          "AddressType": "POBOX",
-          "City": "",
-          "Region": "",
-          "PostalCode": "",
-          "Country": "",
-          "AttentionTo": ""
-        }
-      ],
-      "Phones": [
-        {
-          "PhoneType": "DDI",
-          "PhoneNumber": "",
-          "PhoneAreaCode": "",
-          "PhoneCountryCode": ""
-        },
-        {
-          "PhoneType": "DEFAULT",
-          "PhoneNumber": "",
-          "PhoneAreaCode": "",
-          "PhoneCountryCode": ""
-        },
-        {
-          "PhoneType": "FAX",
-          "PhoneNumber": "",
-          "PhoneAreaCode": "",
-          "PhoneCountryCode": ""
-        },
-        {
-          "PhoneType": "MOBILE",
-          "PhoneNumber": "39972976",
-          "PhoneAreaCode": "4",
-          "PhoneCountryCode": "61"
-        }
-      ],
-      "UpdatedDateUTC": "\/Date(1436646869620+0000)\/",
-      "ContactGroups": [],
-      "IsSupplier": false,
-      "IsCustomer": true,
-      "ContactPersons": [],
-      "HasAttachments": false,
-      "HasValidationErrors": false
-    }
-  ]
-}
-
 Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use  CCP::Xero::Contact;
-
-    my $foo =  CCP::Xero::Contact->new();
+    use  WebService::Xero::Item;
+    my $foo =  WebService::Xero::Item->new();
     ...
 
 =head1 TODO
@@ -119,23 +49,51 @@ sub new
 
     my $self = bless 
     {
-      debug => $params{debug}
+      debug => $params{debug},
+      PurchaseDetails => { UnitPrice => 0, AccountCode=> '', COGSAccountCode=> '', TaxType=> '', },
+      SalesDetails    => { UnitPrice => 0, AccountCode => '', TaxType=> '', },
 
     }, $class;
     foreach my $key (@PARAMS) { $self->{$key} = $params{$key} || '' }
+
+    $self->{PurchaseDetails}{UnitPrice} =  $params{PurchaseDetails}{UnitPrice} if defined $params{PurchaseDetails}{UnitPrice};
+    $self->{PurchaseDetails}{COGSAccountCode} =  $params{PurchaseDetails}{COGSAccountCode} if defined $params{PurchaseDetails}{COGSAccountCode};
+    $self->{PurchaseDetails}{AccountCode} =  $params{PurchaseDetails}{AccountCode} if defined $params{PurchaseDetails}{AccountCode};
+    $self->{PurchaseDetails}{TaxType} =  $params{PurchaseDetails}{TaxType} if defined $params{PurchaseDetails}{TaxType};
+
+    $self->{PurchaseDetails}{UnitPrice} =  $params{PurchaseDetails}{UnitPrice} if defined $params{PurchaseDetails}{UnitPrice};
+    $self->{PurchaseDetails}{AccountCode} =  $params{PurchaseDetails}{AccountCode} if defined $params{PurchaseDetails}{AccountCode};
+    $self->{PurchaseDetails}{TaxType} =  $params{PurchaseDetails}{TaxType} if defined $params{PurchaseDetails}{TaxType};
 
     return $self; #->_validate_agent(); ## derived classes will validate this
 
 }
 
 
+=head2 create_new_through_agent()
+
+=cut 
+
+sub create_new_through_agent
+{
+  my ( $self, %params ) = @_;
+
+  croak('need a valid agent parameter') unless (  ref( $params{agent} ) =~ /Agent/m  ); ## 
+
+  my $new = WebService::Xero::Item->new( %params );
+
+  ## TODO: Create 
+  return $new;
+}
+
+
 =head2 new_from_api_data()
 
   creates a new instance from the data provided by querying the API organisation end point 
-  ( typically handled by CCP::Xero::Agent->do_xero_api_call() )
+  ( typically handled by WebService::Xero::Agent->do_xero_api_call() )
 
   Example Contact Queries using Xero Agent that return Data consumable by this method:
-    https://api.xero.com/api.xro/2.0/Contacts
+    https://api.xero.com/api.xro/2.0/Items
 
   Returns undef, a single object instance or an array of object instances depending on the data input provided.
 
@@ -145,10 +103,23 @@ sub new
 sub new_from_api_data
 {
   my ( $self, $data ) = @_;
-  return $self->new(  %{$data->{Contacts}[0]} ) if ( ref($data->{Contacts}) eq 'ARRAY' and scalar(@{$data->{Contacts}})==1 );  
+  return $self->new(  %{$data->{Items}[0]} ) if ( ref($data->{Items}) eq 'ARRAY' and scalar(@{$data->{Items}})==1 );  
+  if ( ref($data->{Items}) eq 'ARRAY' and scalar(@{$data->{Items}})>1 )
+  {
+    my $Items = [];
+    foreach my $Item_struct ( @{$data->{Items}} ) 
+    {
+      push @$Items, $self->new(  %{$Item_struct} );
+    }
+    return $Items;
+  }
   return $self->new( debug=> $data );  
 
 }
+
+
+
+
 
 =head2 as_text()
 
@@ -159,8 +130,11 @@ sub as_text
 {
     my ( $self ) = @_;
 
-    return join("\n", map { "$_ : $self->{$_}" } @PARAMS);
+    my $ret = join("\n", map { "$_ : $self->{$_}" } @PARAMS);
+    $ret .= " PurchaseDetails::UnitPrice  $self->{PurchaseDetails}{UnitPrice}\n";
+    $ret .= " PurchaseDetails::UnitPrice  $self->{PurchaseDetails}{UnitPrice}\n";
 
+  return $ret;
 
 }
 
@@ -179,12 +153,21 @@ the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CCP-Xero>.
 automatically be notified of progress on your bug as I make changes.
 
 
+=head1 API LIMITATIONS
+
+Emailing Items - FROM Xero Developer Docs ( https://developer.xero.com/documentation/api/Items/ )
+
+It is not possible to email an Item through the Xero application using the Xero accounting API.
+To track progress on this feature request, or to add your support to it, please vote here.
+
+
+
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc CCP::Xero::Contact
+    perldoc WebService::Xero::Item
 
 
 You can also look for information at:
@@ -245,4 +228,4 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of CCP::Xero
+1; # End of WebService::Xero

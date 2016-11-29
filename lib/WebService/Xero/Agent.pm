@@ -1,9 +1,10 @@
-package CCP::Xero::Agent;
+package WebService::Xero::Agent;
 
 
 use 5.006;
 use strict;
 use warnings;
+use Carp;
 
 use LWP::UserAgent;
 use HTTP::Request;
@@ -17,20 +18,20 @@ use Data::Random qw( rand_chars );
 use Net::OAuth 0.20;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
-use CCP::Xero::Organisation;
+use WebService::Xero::Organisation;
 
 
 =head1 NAME
 
-CCP::Xero::Agent
+WebService::Xero::Agent
 
 =head1 VERSION
 
-Version 0.01
+Version 0.10
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.10';
 
 
 =head1 SYNOPSIS
@@ -39,8 +40,8 @@ This is the base class for the Xero API agents that integrate with the Xero Web 
 
 see the following for usage examples:
 
-  perldoc CCP::Xero::Agent::PrivateApplication
-  perldoc CCP::Xero::Agent::PublicApplication
+  perldoc WebService::Xero::Agent::PrivateApplication
+  perldoc WebService::Xero::Agent::PublicApplication
 
 
 
@@ -201,7 +202,7 @@ sub do_xero_api_call
   } 
   else 
   {
-    return $self->error('ONLY POST AND GET CURRENT SUPPORTED BY CCP::Xero Library');
+    return $self->error('ONLY POST AND GET CURRENT SUPPORTED BY WebService::Xero Library');
   }
   my $res = $self->{ua}->request($req);
   if ($res->is_success)
@@ -233,14 +234,14 @@ sub api_error
 =head2 api_account_organisation()
   
   Experimental: a shortcut to dp_xero_api_call that returns 
-  a CCP::Xero::Organisation object describing the organisation that provides the API.
+  a WebService::Xero::Organisation object describing the organisation that provides the API.
 
 =cut 
 
 sub api_account_organisation
 {
   my ( $self ) = @_;
-  return CCP::Xero::Organisation->new_from_api_data( $self->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/organisation' ) ) || $self->error('FAILED TO CREATE ORGANISATION OBJECT FROM AGENT');
+  return WebService::Xero::Organisation->new_from_api_data( $self->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/organisation' ) ) || $self->error('FAILED TO CREATE ORGANISATION OBJECT FROM AGENT');
 }
 
 
@@ -253,8 +254,8 @@ sub api_account_organisation
 sub error 
 {
   my ( $self, $msg ) = @_;
-  warn($msg);
-  return undef;
+  carp($msg);
+  return $self->{_ERROR_VAL};
 }
 
 
@@ -267,11 +268,7 @@ sub error
 sub as_text
 {
   my ( $self ) = @_;
-  return qq{
-    NAME              => $self->{NAME}
-    CONSUMER_KEY      => $self->{CONSUMER_KEY}
-    CONSUMER_SECRET   => $self->{CONSUMER_SECRET}     
-  }
+  return qq{    NAME              => $self->{NAME}\nCONSUMER_KEY      => $self->{CONSUMER_KEY}\nCONSUMER_SECRET   => $self->{CONSUMER_SECRET} \n};
 }
 
 
@@ -295,7 +292,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc CCP::Xero
+    perldoc WebService::Xero
 
 
 You can also look for information at:
@@ -367,4 +364,4 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of CCP::Xero
+1; # End of WebService::Xero

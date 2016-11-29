@@ -1,4 +1,4 @@
-package CCP::Xero::Organisation;
+package WebService::Xero::Organisation;
 
 use 5.006;
 use strict;
@@ -7,15 +7,15 @@ use warnings;
 use Data::Dumper;
 =head1 NAME
 
-CCP::Xero::Organisation - contains information about a Xero organisation
+WebService::Xero::Organisation - contains information about a Xero organisation
 
 =head1 VERSION
 
-Version 0.01
+Version 0.10
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.10';
 
 our @PARAMS = qw/Name LegalName Version OrganisationType BaseCurrency CountryCode RegistrationNumber TaxNumber FinancialYearEndDay FinancialYearEndMonth LineOfBusiness /;
 
@@ -27,9 +27,9 @@ Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
-    use  CCP::Xero::Organisation;
+    use  WebService::Xero::Organisation;
 
-    my $foo =  CCP::Xero::Organisation->new();
+    my $foo =  WebService::Xero::Organisation->new();
     ...
 
 =head1 TODO
@@ -64,7 +64,7 @@ sub new
 =head2 new_from_api_data()
 
   creates a new instance from the data provided by querying the API organisation end point 
-  ( typically handled by CCP::Xero::Agent->api_account_organisation() which calls this method )
+  ( typically handled by WebService::Xero::Agent->api_account_organisation() which calls this method )
 
 =cut 
 
@@ -88,14 +88,31 @@ sub as_text
     return join("\n", map { "$_ : $self->{$_}" } @PARAMS);
 
 
-    return Dumper $self;
 
-    return qq{
-APIKey  $self->
-Name    Display name of organisation shown in Xero
+
+
+}
+
+=head1 AUTHOR
+
+Peter Scott, C<< <peter at computerpros.com.au> >>
+
+
+=head1 REFERENCE
+
+
+=head1 BUGS
+
+Please report any bugs or feature requests to C<bug-ccp-xero at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CCP-Xero>.  I will be notified, and then you'll
+automatically be notified of progress on your bug as I make changes.
+
+
+APIKey  
+Name        Display name of organisation shown in Xero
 LegalName   Organisation name shown on Reports
-PaysTax Boolean to describe if organisation is registered with a local tax authority i.e. true, false
-Version See Version Types
+PaysTax     Boolean to describe if organisation is registered with a local tax authority i.e. true, false
+Version     See Version Types
 OrganisationType    Organisation Type
 BaseCurrency    Default currency for organisation. See ISO 4217 Currency Codes
 CountryCode Country code for organisation. See ISO 3166-2 Country Codes
@@ -119,91 +136,7 @@ Addresses   Address details for organisation – see Addresses
 Phones  Phones details for organisation – see Phones
 ExternalLinks   Organisation profile links for popular services such as Facebook, Twitter, GooglePlus and LinkedIn. You can also add link to your website here. Shown if Organisation settings is updated in Xero. See ExternalLinks below
 PaymentTerms    Default payment terms for the organisation if set – See Payment Terms below
-    };
 
-}
-
-=head1 AUTHOR
-
-Peter Scott, C<< <peter at computerpros.com.au> >>
-
-
-=head1 REFERENCE
-
-
-=head1 BUGS
-
-Please report any bugs or feature requests to C<bug-ccp-xero at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CCP-Xero>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
-
-
-{
-  "Id": "6909e212-d579-433f-92c5-a2415d4c1cf7",
-  "Status": "OK",
-  "ProviderName": "Xero API Previewer",
-  "DateTimeUTC": "\/Date(1479607269618)\/",
-  "Organisations": [
-    {
-      "APIKey": "GAMLHSIGOJCE4SCSSKEHFAPQJIJFZS",
-      "Name": "Combined Computer Professionals Pty Ltd",
-      "LegalName": "Combined Computer Professionals Pty Ltd",
-      "PaysTax": true,
-      "Version": "AU",
-      "OrganisationType": "COMPANY",
-      "BaseCurrency": "AUD",
-      "CountryCode": "AU",
-      "IsDemoCompany": false,
-      "OrganisationStatus": "ACTIVE",
-      "RegistrationNumber": "95093455120",
-      "FinancialYearEndDay": 30,
-      "FinancialYearEndMonth": 6,
-      "SalesTaxBasis": "CASH",
-      "SalesTaxPeriod": "QUARTERLY1",
-      "DefaultSalesTax": "Tax Inclusive",
-      "DefaultPurchasesTax": "Tax Inclusive",
-      "CreatedDateUTC": "\/Date(1435803651000)\/",
-      "OrganisationEntityType": "COMPANY",
-      "Timezone": "EAUSTRALIASTANDARDTIME",
-      "ShortCode": "!84jzb",
-      "LineOfBusiness": "IT Consulting & Services",
-      "Addresses": [
-        {
-          "AddressType": "STREET",
-          "AddressLine1": "465 Pine Ridge Rd",
-          "City": "Runaway Bay",
-          "Region": "Queensland",
-          "PostalCode": "4216",
-          "Country": "",
-          "AttentionTo": ""
-        },
-        {
-          "AddressType": "POBOX",
-          "AddressLine1": "PO Box 1331",
-          "City": "Runaway Bay",
-          "Region": "QLD",
-          "PostalCode": "4216",
-          "Country": "Australia",
-          "AttentionTo": "Peter and Heather Scott"
-        }
-      ],
-      "Phones": [
-        {
-          "PhoneType": "OFFICE",
-          "PhoneNumber": "410 580 546",
-          "PhoneCountryCode": "61"
-        }
-      ],
-      "ExternalLinks": [
-        {
-          "LinkType": "Website",
-          "Url": "http://www.computerpros.com.au"
-        }
-      ],
-      "PaymentTerms": {}
-    }
-  ]
-}
 
 
 
@@ -211,7 +144,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc CCP::Xero::Organisation
+    perldoc WebService::Xero::Organisation
 
 
 You can also look for information at:
@@ -272,4 +205,4 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of CCP::Xero
+1; # End of WebService::Xero

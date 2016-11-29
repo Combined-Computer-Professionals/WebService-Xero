@@ -1,22 +1,24 @@
-package CCP::Xero::Agent::PrivateApplication;
-use base ('CCP::Xero::Agent');
+package WebService::Xero::Agent::PrivateApplication;
+
 
 use 5.006;
 use strict;
 use warnings;
+use Carp;
+use base ('WebService::Xero::Agent');
 use Crypt::OpenSSL::RSA;
 
 =head1 NAME
 
-CCP::Xero::Agent::PrivateApplication
+WebService::Xero::Agent::PrivateApplication
 
 =head1 VERSION
 
-Version 0.01
+Version 0.10
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.10';
 
 
 =head1 SYNOPSIS
@@ -26,9 +28,9 @@ our $VERSION = '0.01';
 Xero API Applications have a limit of 1,000/day and 60/minute request per organisation.
 
 
-    use CCP::Xero::Agent::PrivateApplication;
+    use WebService::Xero::Agent::PrivateApplication;
 
-    my $xero = CCP::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
+    my $xero = WebService::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
                                                           CONSUMER_SECRET => 'YOUR_OAUTH_CONSUMER_SECRET', 
                                                           KEYFILE         => "/path/to/privatekey.pem" 
                                                           );
@@ -55,13 +57,17 @@ https://app.xero.com/Application
 
 =head2 as_text()
 
+  returns 'WebService::Xero::Agent::PrivateApplication'
+
 =cut 
 
 sub as_text
 {
     my ( $self ) = @_;
+    return 'WebService::Xero::Agent::PrivateApplication';
 
 }
+
 
 sub _validate_agent 
 {
@@ -74,7 +80,21 @@ sub _validate_agent
 }
 
 
+=head2 do_xero_api_call()
 
+  INPUT PARAMETERS AS A LIST ( NOT NAMED )
+
+* $uri (required)    - the API endpoint URI ( eg 'https://api.xero.com/api.xro/2.0/Contacts/')
+* $method (optional) - 'POST' or 'GET' .. PUT not currently supported
+* $xml (optional)    - the payload for POST updates as XML
+
+  RETURNS
+
+    The response is requested in JSON format which is then processed into a Perl structure that
+    is returned to the caller.
+
+
+=cut 
 
 
 =head1 AUTHOR
@@ -83,8 +103,8 @@ Peter Scott, C<< <peter at computerpros.com.au> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-ccp-xero at rt.cpan.org>, or through
-the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CCP-Xero>.  I will be notified, and then you'll
+Please report any bugs or feature requests to C<bug-webservice-xero at rt.cpan.org>, or through
+the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-Xero>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
 
@@ -94,7 +114,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc CCP::Xero
+    perldoc WebService::Xero
 
 
 You can also look for information at:
@@ -103,19 +123,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker (report bugs here)
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=CCP-Xero>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=WebService-Xero>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/CCP-Xero>
+L<http://annocpan.org/dist/WebService-Xero>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/CCP-Xero>
+L<http://cpanratings.perl.org/d/WebService-Xero>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/CCP-Xero/>
+L<http://search.cpan.org/dist/WebService-Xero/>
 
 =back
 
@@ -166,4 +186,4 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of CCP::Xero
+1; # End of WebService::Xero

@@ -11,11 +11,11 @@ WebService::Xero::Organisation - contains information about a Xero organisation
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 our @PARAMS = qw/Name LegalName Version OrganisationType BaseCurrency CountryCode RegistrationNumber TaxNumber FinancialYearEndDay FinancialYearEndMonth LineOfBusiness /;
 
@@ -106,36 +106,6 @@ Peter Scott, C<< <peter at computerpros.com.au> >>
 Please report any bugs or feature requests to C<bug-ccp-xero at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CCP-Xero>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
-
-
-APIKey  
-Name        Display name of organisation shown in Xero
-LegalName   Organisation name shown on Reports
-PaysTax     Boolean to describe if organisation is registered with a local tax authority i.e. true, false
-Version     See Version Types
-OrganisationType    Organisation Type
-BaseCurrency    Default currency for organisation. See ISO 4217 Currency Codes
-CountryCode Country code for organisation. See ISO 3166-2 Country Codes
-  IsDemoCompany   Boolean to describe if organisation is a demo company.
-  OrganisationStatus  Will be set to ACTIVE if you can connect to organisation via the Xero API
-RegistrationNumber  Shows for New Zealand, Australian and UK organisations
-TaxNumber   Shown if set. Displays in the Xero UI as Tax File Number (AU), GST Number (NZ), VAT Number (UK) and Tax ID Number (US & Global).
-FinancialYearEndDay Calendar day e.g. 0-31
-FinancialYearEndMonth   Calendar Month e.g. 1-12
-SalesTaxBasis   The accounting basis used for tax returns. See Sales Tax Basis
-SalesTaxPeriod  The frequency with which tax returns are processed. See Sales Tax Period
-DefaultSalesTax The default for LineAmountTypes on sales transactions
-DefaultPurchasesTax The default for LineAmountTypes on purchase transactions
-PeriodLockDate  Shown if set. See lock dates
-EndOfYearLockDate   Shown if set. See lock dates
-CreatedDateUTC  Timestamp when the organisation was created in Xero
-OrganisationEntityType  Timezone specifications
-ShortCode   A unique identifier for the organisation. Potential uses.
-LineOfBusiness  Description of business type as defined in Organisation settings
-Addresses   Address details for organisation – see Addresses
-Phones  Phones details for organisation – see Phones
-ExternalLinks   Organisation profile links for popular services such as Facebook, Twitter, GooglePlus and LinkedIn. You can also add link to your website here. Shown if Organisation settings is updated in Xero. See ExternalLinks below
-PaymentTerms    Default payment terms for the organisation if set – See Payment Terms below
 
 
 

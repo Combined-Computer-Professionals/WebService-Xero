@@ -15,7 +15,7 @@ Version 0.10
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 our @PARAMS = qw/ContactID ContactStatus Name FirstName LastName EmailAddress BankAccountDetails UpdatedDateUTC IsCustomer/;
 

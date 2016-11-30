@@ -3,12 +3,12 @@ use 5.006;
 use strict;
 use warnings;
 use Data::Dumper;
-use Test::More;
+use Test::More 0.88;
 use Crypt::OpenSSL::RSA;
 use File::Slurp;
 use URI::Encode qw(uri_encode uri_decode );
 
-plan tests => 17;
+#plan tests => 17; # instead of noplan using  done_testing;
 
 use Config::Tiny;
 
@@ -25,11 +25,12 @@ BEGIN {
     #ok( my $xero = WebService::Xero::Agent->new(), 'New Xero::Agent');
     ok( 1==1, 'New Xero::Agent');
         SKIP: {
-            skip ("no config - skipping agent tests", 10) unless $ENV{XERO_TEST_CONFIG} ;
-              diag(" --- Full Agent tests - config XERO_TEST_CONFIG=$ENV{XERO_TEST_CONFIG}");
-              ok( -e $ENV{XERO_TEST_CONFIG} , 'config file exists' );
+            skip ("no config found in ./t/config/test_config.ini - skipping agent tests", 10) unless -e './t/config/test_config.ini' ;
+              note(" --- Full Agent tests - loading config ./t/config/test_config.ini");
+              #ok( -e $ENV{XERO_TEST_CONFIG} , 'config file exists' );
+              #ok( -e $ENV{XERO_TEST_CONFIG} , 'config file exists' );
               ## VALIDATE CONFIGURATION FILE
-              ok( my $config =  Config::Tiny->read( $ENV{XERO_TEST_CONFIG} ) , 'Load Config defined $ENV{XERO_TEST_CONFIG}' );
+              ok( my $config =  Config::Tiny->read( './t/config/test_config.ini' ) , 'Load Config defined at ./t/config/test_config.ini }' );
 
 
               TODO: {
@@ -54,26 +55,26 @@ BEGIN {
                                                          # KEYFILE         => $config->{PRIVATE_APPLICATION}{KEYFILE},
                                                           PRIVATE_KEY     => $pk_text,
                                                           ), 'New Xero Private Application Agent' );
-                  diag( $xero->as_text() );
+                  note( $xero->as_text() );
                   ## TEST GET PRODUCTS
                   ok( my $products = $xero->get_all_xero_products_from_xero(), 'Get live products' );
-                  diag( Dumper $products );
+                  note( Dumper $products );
 
                   ## TEST GET ORAGNISATION DETAILS
                   ok( my $org = $xero->api_account_organisation(), 'Get API Owner Organisation Details' );
-                  diag( $org->as_text() );
+                  note( $org->as_text() );
 
                   ## TEST SEACH FOR RODNEY ( requires specific Xero instance )
                   ##   Name.Contains("Peter")
                   #ok( my $contact = WebService::Xero::Contact->new_from_api_data(  $xero->do_xero_api_call( q{https://api.xero.com/api.xro/2.0/Contacts?where=Name.Contains("Antique")} ) ) , 'Get Contact Peter');
-                  #diag(  $contact->as_text() );
+                  #note(  $contact->as_text() );
 
 
                   ## TEST INVOICES
                   
                   my $filter = '';# uri_encode(qq{Contact.ContactID=Guid("$contact->{ContactID}")});
                   ok( my $invoices = WebService::Xero::Invoice->new_from_api_data(  $xero->do_xero_api_call( qq{https://api.xero.com/api.xro/2.0/Invoices?where=$filter} ) ) , "Get Invoices");
-                  diag(  "Got " . scalar(@$invoices) . " invoices '" );
+                  note(  "Got " . scalar(@$invoices) . " invoices '" );
 
                   ## GET PRODUCTS
                   #$filter = uri_encode(qq{ItemID=Guid("7f2f877b-0c3d-4004-8693-8fb1c06e21d7")});
@@ -81,7 +82,7 @@ BEGIN {
                   ok( my $items = WebService::Xero::Item->new_from_api_data(  $xero->do_xero_api_call( qq{https://api.xero.com/api.xro/2.0/Items?where=$filter} ) ) , "Get Invoices ");
                   my $txt = ''; 
                   if ( ref($items) eq 'ARRAY' ) { foreach my $item(@$items) { $txt.=$item->as_text(); }; } else { $txt = $items->as_text(); }
-                  diag( "\n\nFOUND ITEM\n" . $txt );
+                  note( "\n\nFOUND ITEM\n" . $txt );
 
                   ## CREATE INVOICE
                   #my $new_invoice = WebService::Xero::Invoice->new();
@@ -94,7 +95,7 @@ BEGIN {
                  ## GET CUSTOMER INVOICES
                  #my $alpha_san_xero_contact_id = '8c7bb386-7eb5-4ee7-a624-eba1e4003844';
                  #ok(my $data2 = $xero->get_all_customer_invoices_from_xero( $alpha_san_xero_contact_id ), 'get alphasan invoices' );
-                 #diag(  "Alphasan has " . scalar(@$data2)  . " invoices" );
+                 #note(  "Alphasan has " . scalar(@$data2)  . " invoices" );
 
 
               }
@@ -103,4 +104,5 @@ BEGIN {
 
 }
 
+done_testing;
 

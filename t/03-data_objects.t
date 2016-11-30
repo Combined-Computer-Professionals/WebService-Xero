@@ -12,7 +12,7 @@ use URI::Encode qw(uri_encode uri_decode );
 
 #plan tests => 17; # instead of noplan using  done_testing;
 
-use Config::Tiny;
+#use Config::Tiny;
 
 
 
@@ -90,12 +90,15 @@ BEGIN {
     ok( my $item_obj = WebService::Xero::Item->new(), 'WebService::Xero::Item->new()');
     is( ref($item_obj), 'WebService::Xero::Item', 'created WebService::Xero::Organisation object is the right type' );
     like( $item_obj->as_text(), qr/Item:/, 'WebService::Xero::Item->as_text()' );
+    ok( $item_obj->new_from_api_data(), 'WebService::Xero::Item->new_from_api_data()' );
 
 
     use_ok( 'WebService::Xero::Invoice' ) || print "Bail out!\n";
     ok( my $inv_obj = WebService::Xero::Invoice->new(), 'WebService::Xero::Invoice->new()');
     is( ref($inv_obj), 'WebService::Xero::Invoice', 'created WebService::Invoice::Organisation object is the right type' );
     like( $inv_obj->as_text(), qr/Invoice:/, 'WebService::Xero::Invoice->as_text()' );
+    ok( $inv_obj->new_from_api_data(), 'WebService::Xero::Invoice->new_from_api_data()');
+    ok( $inv_obj->new_from_api_data(), 'WebService::Xero::Invoice->new_from_api_data()' );
 
 
 

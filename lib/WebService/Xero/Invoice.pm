@@ -24,17 +24,16 @@ our @ARRAY_PARAMS = qw//; ## TODO: implement
 
 =head1 SYNOPSIS
 
+Object to describe an Organisation record as specified by Xero API and the associated DTD at 
+L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Invoice.xsd>.
 
-Just a wrapper for Xero Invoice data structure.
+Mostly a wrapper for Xero Invoice data structure.
 
 Perhaps a little code snippet.
 
     use  WebService::Xero::Invoice;
     my $foo =  WebService::Xero::Invoice->new();
     ...
-
-=head1 TODO
-
 
 
 =head1 METHODS
@@ -49,8 +48,8 @@ sub new
 
     my $self = bless 
     {
-      debug => $params{debug}
-
+      debug => $params{debug},
+      API_URL => 'https://api.xero.com/api.xro/2.0/Invoices'
     }, $class;
     foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
 
@@ -95,26 +94,40 @@ sub new_from_api_data
   
   if ( ref($data->{Invoices}) eq 'ARRAY' and scalar(@{$data->{Invoices}})==1 )
   {
-    return $self->new(  %{$data->{Invoices}[0]} ) 
+    return WebService::Xero::Invoice->new(  %{$data->{Invoices}[0]} ) 
   }
   elsif ( ref($data->{Invoices}) eq 'ARRAY' and scalar(@{$data->{Invoices}})>1 )
   {
     my $invoices = [];
     foreach my $invoice_struct ( @{$data->{Invoices}} ) 
     {
-      push @$invoices, $self->new(  %{$invoice_struct} );
+      push @$invoices, WebService::Xero::Invoice->new(  %{$invoice_struct} );
     }
     return $invoices;
   }
-  return $self->new( debug=> $data );  
+  return WebService::Xero::Invoice->new( debug=> $data );  
 
 }
+
+
+=head2 as_text()
+
+=cut
+
+
+sub as_text 
+{
+    my ( $self ) = @_;
+    return "Invoice:\n" . join("\n", map { "$_ : $self->{$_}" } @PARAMS);
+}
+
+
+=head1 TODO
 
 
 =head2 get_pdf()
 
   see API LIMITATIONS
-
   also https://developer.xero.com/documentation/getting-started/http-requests-and-responses/#get-individual
  
 =cut 
@@ -128,19 +141,6 @@ sub get_pdf
 
 
 
-=head2 as_text()
-
-=cut
-
-
-sub as_text 
-{
-    my ( $self ) = @_;
-
-    return "Invoice:\n" . join("\n", map { "$_ : $self->{$_}" } @PARAMS);
-
-
-}
 
 =head1 AUTHOR
 

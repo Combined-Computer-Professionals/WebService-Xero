@@ -7,7 +7,7 @@ use Carp;
 use Data::Dumper;
 =head1 NAME
 
-WebService::Xero::Item - encapsulates a Xero API Item record
+WebService::Xero::Item - Object encapulates Item data returned by API
 
 =head1 VERSION
 
@@ -25,15 +25,15 @@ our @ARRAY_PARAMS = qw//; ## TODO: implement
 =head1 SYNOPSIS
 
 
-Quick summary of what the module does.
+Object to describe an Item record as specified by Xero API and the associated DTD at 
+L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Item.xsd>.
 
-Perhaps a little code snippet.
+Mostly a wrapper for Xero Item data structure.
+
 
     use  WebService::Xero::Item;
     my $foo =  WebService::Xero::Item->new();
     ...
-
-=head1 TODO
 
 
 
@@ -49,6 +49,7 @@ sub new
 
     my $self = bless 
     {
+      API_URL => 'https://api.xero.com/api.xro/2.0/Items',
       debug => $params{debug},
       PurchaseDetails => { UnitPrice => 0, AccountCode=> '', COGSAccountCode=> '', TaxType=> '', },
       SalesDetails    => { UnitPrice => 0, AccountCode => '', TaxType=> '', },
@@ -56,14 +57,14 @@ sub new
     }, $class;
     foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
 
-    $self->{PurchaseDetails}{UnitPrice} =  $params{PurchaseDetails}{UnitPrice} if defined $params{PurchaseDetails}{UnitPrice};
+    $self->{PurchaseDetails}{UnitPrice}       =  $params{PurchaseDetails}{UnitPrice}       if defined $params{PurchaseDetails}{UnitPrice};
     $self->{PurchaseDetails}{COGSAccountCode} =  $params{PurchaseDetails}{COGSAccountCode} if defined $params{PurchaseDetails}{COGSAccountCode};
-    $self->{PurchaseDetails}{AccountCode} =  $params{PurchaseDetails}{AccountCode} if defined $params{PurchaseDetails}{AccountCode};
-    $self->{PurchaseDetails}{TaxType} =  $params{PurchaseDetails}{TaxType} if defined $params{PurchaseDetails}{TaxType};
+    $self->{PurchaseDetails}{AccountCode}     =  $params{PurchaseDetails}{AccountCode}     if defined $params{PurchaseDetails}{AccountCode};
+    $self->{PurchaseDetails}{TaxType}         =  $params{PurchaseDetails}{TaxType}         if defined $params{PurchaseDetails}{TaxType};
 
-    $self->{PurchaseDetails}{UnitPrice} =  $params{PurchaseDetails}{UnitPrice} if defined $params{PurchaseDetails}{UnitPrice};
-    $self->{PurchaseDetails}{AccountCode} =  $params{PurchaseDetails}{AccountCode} if defined $params{PurchaseDetails}{AccountCode};
-    $self->{PurchaseDetails}{TaxType} =  $params{PurchaseDetails}{TaxType} if defined $params{PurchaseDetails}{TaxType};
+    $self->{PurchaseDetails}{UnitPrice}       =  $params{PurchaseDetails}{UnitPrice}       if defined $params{PurchaseDetails}{UnitPrice};
+    $self->{PurchaseDetails}{AccountCode}     =  $params{PurchaseDetails}{AccountCode}     if defined $params{PurchaseDetails}{AccountCode};
+    $self->{PurchaseDetails}{TaxType}         =  $params{PurchaseDetails}{TaxType}         if defined $params{PurchaseDetails}{TaxType};
 
     return $self; #->_validate_agent(); ## derived classes will validate this
 
@@ -71,6 +72,8 @@ sub new
 
 
 =head2 create_new_through_agent()
+
+  not ready to use yet.
 
 =cut 
 
@@ -103,17 +106,17 @@ sub create_new_through_agent
 sub new_from_api_data
 {
   my ( $self, $data ) = @_;
-  return $self->new(  %{$data->{Items}[0]} ) if ( ref($data->{Items}) eq 'ARRAY' and scalar(@{$data->{Items}})==1 );  
+  return WebService::Xero::Item->new(  %{$data->{Items}[0]} ) if ( ref($data->{Items}) eq 'ARRAY' and scalar(@{$data->{Items}})==1 );  
   if ( ref($data->{Items}) eq 'ARRAY' and scalar(@{$data->{Items}})>1 )
   {
     my $Items = [];
     foreach my $Item_struct ( @{$data->{Items}} ) 
     {
-      push @$Items, $self->new(  %{$Item_struct} );
+      push @$Items, WebService::Xero::Item->new(  %{$Item_struct} );
     }
     return $Items;
   }
-  return $self->new( debug=> $data );  
+  return WebService::Xero::Item->new( debug=> $data );  
 
 }
 
@@ -180,6 +183,8 @@ L<https://developer.xero.com/documentation/api/contacts/>
 
 
 =back
+
+=head1 TODO
 
 
 =head1 ACKNOWLEDGEMENTS

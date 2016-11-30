@@ -101,7 +101,7 @@ sub get_all_xero_products_from_xero
 {
   my ( $self ) = @_;
   #my $data = $self->_do_xero_get( q{https://api.xero.com/api.xro/2.0/Items} );
-  my $data = $self->do_xero_api_call( q{https://api.xero.com/api.xro/2.0/Items} );
+  my $data = $self->do_xero_api_call( q{https://api.xero.com/api.xro/2.0/Items} ) || return $self->_error('get_all_xero_products_from_xero() failed');
   return $data;
 }
 #####################################

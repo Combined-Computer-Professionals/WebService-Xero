@@ -34,6 +34,8 @@ Public Applications
 Public applications use a 3-legged authorisation process. A user will need to authorise your application against each organisation that 
 you want access to. For a great description of the 3-legged flow see L<http://oauthbible.com/#oauth-10a-three-legged> .
 
+For a working example that uses Mojolicious Web Framework see L<https://github.com/pscott-au/mojolicious-xero-public-app-demo>
+
 
 =head2 XERO PUBLIC APPLICATION API CONFIGURATION
 

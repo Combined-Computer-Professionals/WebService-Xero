@@ -11,11 +11,11 @@ WebService::Xero::Organisation - Object encapulates Organisation data returned b
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =cut
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 our @PROPERTIES = qw/APIKey Name LegalName PaysTax Version BaseCurrency CountryCode IsDemoCompany OrganisationStatus 
                      RegistrationNumber TaxNumber FinancialYearEndDay FinancialYearEndMonth 

@@ -1,6 +1,6 @@
 WebService-Xero
 
-VERSION 1.10
+VERSION 0.12
 
 Inspired by the Xero endorsed Ruby API Library https://github.com/waynerobinson/xeroizer/ 
 and the CPAN Net::Xero module,

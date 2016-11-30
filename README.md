@@ -14,7 +14,7 @@ points for Public, Private and in the future Partner application services.
 WebService::Xero modules primarily encapsulate the [OAuth (v1.0a) access control protocol as described by Cubrid](http://www.cubrid.org/blog/dev-platform/dancing-with-oauth-understanding-how-authorization-works/) .
 
 
-This module now be available through [CPAN](http://search.cpan.org/~localshop/WebService-Xero/)
+This package is now available through [CPAN](http://search.cpan.org/~localshop/WebService-Xero/)
 
 ## Prerequisites 
 
@@ -26,11 +26,11 @@ This module now be available through [CPAN](http://search.cpan.org/~localshop/We
 sudo apt-get install perl build-essential ## eg debian package install
 ````
 
-## Getting Started
+## Installing Manually
 
 
+This Perl code is in the standard CPAN package format and can be installed through CPAN or downloaded and installed manually either from GitHub or CPAN:
 
-This Perl code is in the standard CPAN package format and can be installed using the usual approach:
 ```sh
   perl Makefile.PL
   make
@@ -40,11 +40,11 @@ This Perl code is in the standard CPAN package format and can be installed using
 
 ### Installing Step by Step
 
-Download the source:
+Download the latest stable source:
 
 ```sh
-    git clone https://github.com/pscott-au/CCP-Xero
-    cd CCP-Xero
+    git clone https://github.com/Combined-Computer-Professionals/WebService-Xero
+    cd WebService-Xero
 ```
 
 Create the makefile
@@ -91,6 +91,8 @@ my $xero = WebService::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 
 my $contact_struct = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts' );
 print Dumper $contact_struct; ## should contain an array of hashes containing contact data.
 ````
+
+An example of a minimalistic Mojolicious framework Public Application implementation can be found at [github.com/pscott-au/mojolicious-xero-public-app-demo](https://github.com/pscott-au/mojolicious-xero-public-app-demo)
 
 See perldoc for details
 ````sh

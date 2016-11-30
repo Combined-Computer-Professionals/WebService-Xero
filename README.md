@@ -3,17 +3,18 @@
 
 [![Build Status](https://travis-ci.org/pscott-au/CCP-Xero.svg?branch=master)](https://travis-ci.org/pscott-au/CCP-Xero)
 [![Coverage Status](https://coveralls.io/repos/github/pscott-au/CCP-Xero/badge.svg?branch=master)](https://coveralls.io/github/pscott-au/CCP-Xero?branch=master)
+[![CPAN Version](https://img.shields.io/cpan/v/WebService-Xero.svg)](http://search.cpan.org/~localshop/WebService-Xero/lib/WebService/Xero.pm)
 [![Join the chat at https://gitter.im/CCP-AU/](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/CCP-AU?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badgeP-AU/Lobby?source=orgpage)
 
 Perl CPAN style module to simplify integration with [Xero API Applications](https://developer.xero.com)
 
 Inspired by the Xero endorsed Ruby API Library [Xeroizer] 
-and the CPAN [Net::Xero](http://search.cpan.org/~elliott/Net-Xero-0.43/lib/Net/Xero.pm) module, this Perl module aims to simplify integration with Xero API Applications
+and the CPAN [Net::Xero](http://search.cpan.org/~elliott/Net-Xero/lib/Net/Xero.pm) module, this Perl module aims to simplify integration with Xero API Applications
 points for Public, Private and in the future Partner application services.
 WebService::Xero modules primarily encapsulate the [OAuth (v1.0a) access control protocol as described by Cubrid](http://www.cubrid.org/blog/dev-platform/dancing-with-oauth-understanding-how-authorization-works/) .
-The module is in the CCP namespace because it was extracted from a larger application.
 
 
+This module now be available through [CPAN](http://search.cpan.org/~localshop/WebService-Xero/)
 
 ## Prerequisites 
 
@@ -27,7 +28,7 @@ sudo apt-get install perl build-essential ## eg debian package install
 
 ## Getting Started
 
-This module can now be installed through CPAN using 
+
 
 This Perl code is in the standard CPAN package format and can be installed using the usual approach:
 ```sh
@@ -83,9 +84,10 @@ use Data::Dumper;
 
 my $xero = WebService::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
                                                     CONSUMER_SECRET => 'YOUR_OAUTH_CONSUMER_SECRET', 
-                                                    KEYFILE         => "/path/to/privatekey.pem" 
+                                                    PRIVATE_KEY      => '-----BEGIN RSA PRIVATE KEY-----.....etc'
                                                           );
-## AND THEN ACCESS THE API POINTS
+## AND THEN ACCESS THE XERO API POINTS
+
 my $contact_struct = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts' );
 print Dumper $contact_struct; ## should contain an array of hashes containing contact data.
 ````

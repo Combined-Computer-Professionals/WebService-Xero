@@ -70,3 +70,11 @@
 
 # Avoid archives of this distribution
 \bSFR-TelnetModule-[\d\.\_]+
+
+# Avoid test and GitHub Files (!PS )
+.coveralls.yml
+.travis.yml
+README.md
+
+# Avoid including private API settings
+t/config/test_config.ini

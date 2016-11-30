@@ -10,15 +10,15 @@ use Crypt::OpenSSL::RSA;
 
 =head1 NAME
 
-WebService::Xero::Agent::PrivateApplication
+WebService::Xero::Agent::PrivateApplication - Connects to a Xero Private Application API 
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 
 =head1 SYNOPSIS
@@ -32,7 +32,22 @@ Xero API Applications have a limit of 1,000/day and 60/minute request per organi
 
     my $xero = WebService::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
                                                           CONSUMER_SECRET => 'YOUR_OAUTH_CONSUMER_SECRET', 
-                                                          KEYFILE         => "/path/to/privatekey.pem" 
+                                                          #KEYFILE         => "/path/to/privatekey.pem" 
+                                                          PRIVATE_KEY      => '-----BEGIN RSA PRIVATE KEY-----
+MIICXQIBAAKBgQCu2PMZrIHPiFmZujY0s7dz8atk1TofVSTVqhWg5h/fn8tYbwgg
+koTqpAigxAUCAZ63prtj9LQhIqe3TRNtCDMsxxriyN3O/cxkVD52LwCKAgEoaNmr
+Vvt97UgxglKyQ6taNO/c6V8FCKvPC945GKd/b7BoIYZcJsrpo+E+8Ek9IQIDAQAB
+AoGAbbPC+0XIAI0dIp256uEjZkSn89Dw8b27Ka/YeCZKs0UQEYFAiSdE6+9VVoEG
+X1bi3XloM3PSHMQglJpwaMVvTUwZfdxCFIM0mpgXtdK8Xuh3QTZpgH9S0a2HoXrB
+uXFEqvwMcT43ig2FCfVQU86RQZAxrb1YfyFSauEayrVtbT0CQQDe8HEXSkbxjUwj
+I2TdCDA7yOW7rWQPAk3REZ33SqBUdo45qofpkH7vWSx+W6q65uyRYfF4N1JKmW8V
+OhMxBpFPAkEAyMbGZ2VX6gW37g03OGSoUG6mvXe+CKRqv8hV4UoGeQIUYJTFlt2O
+ukD2jKyHqWIdU/3tM3iP1b8CY6JyVyhOjwJBAJ/NmDMKohnJn9bcKxOpJ/HiypIh
+8sQzcZY4W5QEYTLKHJ7HV08brXFh6VvV12bL2q1HmLAEb69bll2P2Gve+k8CQQC3
+1Pi4lxwl1FKSjlsvMUrDSm01Mbw34YM0UlP/0W2XwoWx4MYB2p7ifrTAHQCh4IoF
+64wSAqOADEI9w/F5SBiVAkBJVt3jNObeieMfxVU/NOtajXX51sDUj3XCIWPPui8i
+IKzzVn7G0kH+/TqtTPdizrDJkg/rsnrTpvHi8eeMZlAy
+-----END RSA PRIVATE KEY-----',
                                                           );
     my $contact_struct = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts' );  
 
@@ -64,7 +79,8 @@ https://app.xero.com/Application
 sub as_text
 {
     my ( $self ) = @_;
-    return 'WebService::Xero::Agent::PrivateApplication';
+    my $txt = 'WebService::Xero::Agent::PrivateApplication';
+    $txt .= "\nSTATUS = " . $self->get_status();
 
 }
 
@@ -72,10 +88,23 @@ sub as_text
 sub _validate_agent 
 {
   my ( $self  ) = @_;
-  if ( not defined $self->{pko} and $self->{PRIVATE_KEY} )
+  return $self->_error('CONSUMER_KEY not valid')     unless ( $self->{CONSUMER_KEY}    =~ /.{20,}/m ); ## min 20 chars - 30 is typical
+  return $self->_error('CONSUMER_SECRET not valid')  unless ( $self->{CONSUMER_SECRET} =~ /.{20,}/m ); ## min 20 chars - 30 is typical
+   #     KEYFILE 
+   #     PRIVATE_KEY
+  if ( not defined $self->{pko} and $self->{PRIVATE_KEY} =~ /BEGIN RSA PRIVATE KEY/smg )
   {
-    $self->{pko} = Crypt::OpenSSL::RSA->new_private_key(  $self->{PRIVATE_KEY} );
+    $self->{pko} = Crypt::OpenSSL::RSA->new_private_key(  $self->{PRIVATE_KEY} ) || return $self->_error('PRIVATE_KEY not valid'); 
+    ## TODO - sort out catching error - currently crashes if fails not return undef
+    ##  could try to catch the error .. eg. RSA.xs:178: OpenSSL error: too long
+    ## FROM Crypt::OpenSSL::RSA docs
+#       NOTE: Many of the methods in this package can croak, so use eval, or
+#       Error.pm's try/catch mechanism to capture errors.  Also, while some
+#       methods from earlier versions of this package return true on success,
+#       this (never documented) behavior is no longer the case.
   }
+  $self->{_status} = 'RSA KEY SET';
+  return $self->_error('PRIVATE_KEY unable to create a valid RSA:' . ref($self->{pko}) ) unless ( ref($self->{pko}) eq 'Crypt::OpenSSL::RSA' );
   return $self;
 }
 

@@ -23,20 +23,22 @@ use WebService::Xero::Organisation;
 
 =head1 NAME
 
-WebService::Xero::Agent
+WebService::Xero::Agent - Base Class for API Connections
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 
 =head1 SYNOPSIS
 
 This is the base class for the Xero API agents that integrate with the Xero Web Application APIs.
+
+You should not need to use this directly but should use one of the derived classes.
 
 see the following for usage examples:
 
@@ -69,6 +71,7 @@ sub new
       internal_token_secret    => $params{internal_token_secret}    || "",  
       pko             => $params{pko} || undef,
       ua              => LWP::UserAgent->new(ssl_opts => { verify_hostname => 1 },),
+      _status           => undef,
     }, $class;
     return $self->_validate_agent(); ## derived classes to validate required properties
 }
@@ -83,14 +86,14 @@ sub new
 sub _validate_agent 
 {
   my ( $self  ) = @_;
-  return $self->error('base class not meant for instantiation');
+  return $self->_error('base class not meant for instantiation');
 }
 
 
 
 =head2 get_all_xero_products_from_xero()
 
-  Experimental: a shortcut to dp_xero_api_call
+  Experimental: a shortcut to do_xero_api_call
 
 =cut
 #####################################
@@ -98,7 +101,7 @@ sub get_all_xero_products_from_xero
 {
   my ( $self ) = @_;
   #my $data = $self->_do_xero_get( q{https://api.xero.com/api.xro/2.0/Items} );
-  my $data = $self->do_xero_api_call( q{https://api.xero.com/api.xro/2.0/Items} );
+  my $data = $self->do_xero_api_call( q{https://api.xero.com/api.xro/2.0/Items} ) || return $self->_error('get_all_xero_products_from_xero() failed');
   return $data;
 }
 #####################################
@@ -106,7 +109,7 @@ sub get_all_xero_products_from_xero
 
 =head2 get_all_customer_invoices_from_xero()
 
-    Experimental: a shortcut to dp_xero_api_call
+    Experimental: a shortcut to do_xero_api_call
 
 =cut 
 
@@ -129,6 +132,7 @@ sub get_all_customer_invoices_from_xero
       $page_count=100; $page++;
     }
   }
+  $self->{status} = 'OK get_all_customer_invoices_from_xero()';
   return $ret;
 }
 #####################################
@@ -185,7 +189,7 @@ sub do_xero_api_call
   }
   else
   {
-    $access->sign(); ## HMAC-SHA1 is slef signed
+    $access->sign(); ## HMAC-SHA1 is self signed
   }
   my $req = HTTP::Request->new( $method,  $uri );
   
@@ -202,12 +206,13 @@ sub do_xero_api_call
   } 
   else 
   {
-    return $self->error('ONLY POST AND GET CURRENT SUPPORTED BY WebService::Xero Library');
+    return $self->_error('ONLY POST AND GET CURRENT SUPPORTED BY WebService::Xero Library');
   }
   my $res = $self->{ua}->request($req);
   if ($res->is_success)
   {
-      $data = from_json($res->content) || return $self->api_error( $res->content );  
+    $self->{status} = 'GOT RESPONSE FROM XERO API CALL';
+    $data = from_json($res->content) || return $self->api_error( $res->content );  
   } 
   else 
   {
@@ -225,8 +230,8 @@ sub do_xero_api_call
 sub api_error
 {
   my ( $self, $msg ) = @_;
-  #return $self->error("SERVER ERROR: CONSUMER_KEY was not recognised - check your credentials") if ( $msg eq 'oauth_problem=consumer_key_unknown&oauth_problem_advice=Consumer%20key%20was%20not%20recognised');
-  return $self->error("UNRECOGNISED ERROR '$msg'");
+  #return $self->_error("SERVER ERROR: CONSUMER_KEY was not recognised - check your credentials") if ( $msg eq 'oauth_problem=consumer_key_unknown&oauth_problem_advice=Consumer%20key%20was%20not%20recognised');
+  return $self->_error("UNRECOGNISED API ERROR '$msg'");
 }
 
 
@@ -241,21 +246,15 @@ sub api_error
 sub api_account_organisation
 {
   my ( $self ) = @_;
-  return WebService::Xero::Organisation->new_from_api_data( $self->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/organisation' ) ) || $self->error('FAILED TO CREATE ORGANISATION OBJECT FROM AGENT');
+  return WebService::Xero::Organisation->new_from_api_data( $self->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/organisation' ) ) || $self->_error('FAILED TO CREATE ORGANISATION OBJECT FROM AGENT');
 }
 
 
-=head2 error
-
-  warns and returns undef
-
-=cut
-
-sub error 
+sub _error 
 {
   my ( $self, $msg ) = @_;
-  carp($msg);
-  return $self->{_ERROR_VAL};
+  carp( $self->{_status} = $msg);
+  return $self->{_ERROR_VAL}; ##undef
 }
 
 
@@ -269,6 +268,18 @@ sub as_text
 {
   my ( $self ) = @_;
   return qq{    NAME              => $self->{NAME}\nCONSUMER_KEY      => $self->{CONSUMER_KEY}\nCONSUMER_SECRET   => $self->{CONSUMER_SECRET} \n};
+}
+
+=head2 get_status
+
+  return a text description of the last communication with the Xero API
+
+=cut 
+
+sub get_status
+{
+  my ( $self ) = @_;
+  return $self->{_status} || 'STATUS NOT SET';
 }
 
 

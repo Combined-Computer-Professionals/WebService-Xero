@@ -3,6 +3,7 @@ package WebService::Xero::Contact;
 use 5.006;
 use strict;
 use warnings;
+use Carp;
 
 use Data::Dumper;
 =head1 NAME
@@ -15,96 +16,28 @@ Version 0.10
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
-our @PARAMS = qw/ContactID ContactStatus Name FirstName LastName EmailAddress BankAccountDetails UpdatedDateUTC IsCustomer/;
+our @PARAMS = qw/ContactID ContactStatus Name FirstName LastName EmailAddress BankAccountDetails UpdatedDateUTC IsCustomer IsSupplier HasAttachments HasValidationErrors
+                 Addresses Phones ContactGroups ContactPersons
+                /;
 
 
 
 =head1 SYNOPSIS
 
 
+Object to describe an Contact record as specified by Xero API and the associated DTD at 
+L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Contact.xsd>.
 
-{
-  "Id": "130c072f-58b4-4c3a-9779-156897162abb",
-  "Status": "OK",
-  "ProviderName": "Xero API Previewer",
-  "DateTimeUTC": "\/Date(1479629008441)\/",
-  "Contacts": [
-    {
-      "ContactID": "c3f837ab-2164-479e-8820-8e533afc375d",
-      "ContactStatus": "ACTIVE",
-      "Name": "Gerard Griggs",
-      "FirstName": "Gerard",
-      "LastName": "Griggs",
-      "EmailAddress": "gerard.griggs@afdfranchisee.com.au",
-      "BankAccountDetails": "",
-      "Addresses": [
-        {
-          "AddressType": "STREET",
-          "City": "",
-          "Region": "",
-          "PostalCode": "",
-          "Country": "",
-          "AttentionTo": ""
-        },
-        {
-          "AddressType": "POBOX",
-          "City": "",
-          "Region": "",
-          "PostalCode": "",
-          "Country": "",
-          "AttentionTo": ""
-        }
-      ],
-      "Phones": [
-        {
-          "PhoneType": "DDI",
-          "PhoneNumber": "",
-          "PhoneAreaCode": "",
-          "PhoneCountryCode": ""
-        },
-        {
-          "PhoneType": "DEFAULT",
-          "PhoneNumber": "",
-          "PhoneAreaCode": "",
-          "PhoneCountryCode": ""
-        },
-        {
-          "PhoneType": "FAX",
-          "PhoneNumber": "",
-          "PhoneAreaCode": "",
-          "PhoneCountryCode": ""
-        },
-        {
-          "PhoneType": "MOBILE",
-          "PhoneNumber": "39972976",
-          "PhoneAreaCode": "4",
-          "PhoneCountryCode": "61"
-        }
-      ],
-      "UpdatedDateUTC": "\/Date(1436646869620+0000)\/",
-      "ContactGroups": [],
-      "IsSupplier": false,
-      "IsCustomer": true,
-      "ContactPersons": [],
-      "HasAttachments": false,
-      "HasValidationErrors": false
-    }
-  ]
-}
+Mostly a wrapper for Xero Contact data structure.
 
-Quick summary of what the module does.
 
 Perhaps a little code snippet.
 
     use  WebService::Xero::Contact;
 
     my $foo =  WebService::Xero::Contact->new();
-    ...
-
-=head1 TODO
-
 
 
 =head1 METHODS
@@ -119,10 +52,11 @@ sub new
 
     my $self = bless 
     {
-      debug => $params{debug}
+      debug => $params{debug},
+      API_URL => 'https://api.xero.com/api.xro/2.0/Contacts',
 
     }, $class;
-    foreach my $key (@PARAMS) { $self->{$key} = $params{$key} || '' }
+    foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
 
     return $self; #->_validate_agent(); ## derived classes will validate this
 
@@ -145,12 +79,14 @@ sub new
 sub new_from_api_data
 {
   my ( $self, $data ) = @_;
-  return $self->new(  %{$data->{Contacts}[0]} ) if ( ref($data->{Contacts}) eq 'ARRAY' and scalar(@{$data->{Contacts}})==1 );  
-  return $self->new( debug=> $data );  
+  return WebService::Xero::Contact->new(  %{$data->{Contacts}[0]} ) if ( ref($data->{Contacts}) eq 'ARRAY' and scalar(@{$data->{Contacts}})==1 );  
+  return WebService::Xero::Contact->new( debug=> $data );  
 
 }
 
 =head2 as_text()
+
+  mostly for debugging.
 
 =cut
 
@@ -178,6 +114,8 @@ Please report any bugs or feature requests to C<bug-webservice-xero at rt.cpan.o
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=WebService-Xero>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
 
+
+=head1 TODO
 
 
 =head1 SUPPORT

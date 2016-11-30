@@ -6,15 +6,15 @@ use warnings;
 
 =head1 NAME
 
-WebService::Xero - Access Xero Accounting Package Public and Private Applicaiton API
+WebService::Xero - Access Xero Accounting Package Public and Private Application API
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 
 =head1 SYNOPSIS
@@ -41,7 +41,7 @@ The simplest implementation uses a Private Application as follows:
 
     my $xero = WebService::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
                                                           CONSUMER_SECRET => 'YOUR_OAUTH_CONSUMER_SECRET', 
-                                                          KEYFILE         => "/path/to/privatekey.pem" 
+                                                          PRIVATE_KEY         => "-----BEGIN RSA PRIVATE KEY-----.........." 
                                                           );
     ## AND THEN ACCESS THE API POINTS
 
@@ -54,7 +54,7 @@ The simplest implementation uses a Private Application as follows:
 
 Xero API call limits are 1,000/day and 60/minute request per organisation limit as described at L<https://developer.xero.com/documentation/getting-started/xero-api-limits/>.
 
-I have started to work at encpsulating the 
+I have started to work at encpsulating the Xero data objects (Contact, Item, Invoice etc ) and will refine for the next release.
 
 =head1 AUTHOR
 
@@ -73,9 +73,7 @@ automatically be notified of progress on your bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc WebService::Xero
-    perldoc WebService::Xero::Agent::PublicApplication
-    perldoc WebService::Xero::Agent::PrivateApplication
+
 
 
 You can also look for information at:
@@ -110,6 +108,19 @@ L<http://search.cpan.org/dist/WebService-Xero/>
 
 
 =head1 ACKNOWLEDGEMENTS
+
+=over 4
+
+=item * Net::Xero for the OAUTH Code 
+
+L<https://metacpan.org/pod/Net::Xero>
+
+
+=item * Steve Bertrand for advice on Perlmonks 
+
+L<https://metacpan.org/author/STEVEB>
+
+=back
 
 
 =head1 LICENSE AND COPYRIGHT

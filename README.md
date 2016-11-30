@@ -27,6 +27,8 @@ sudo apt-get install perl build-essential ## eg debian package install
 
 ## Getting Started
 
+This module can now be installed through CPAN using 
+
 This Perl code is in the standard CPAN package format and can be installed using the usual approach:
 ```sh
   perl Makefile.PL
@@ -52,13 +54,15 @@ perl Makefile.PL
 If given notice of missing dependency modules, these can be installed from CPAN. For example to install a missing Crypt::OpenSSL::RSA module:
 ```sh
     sudo perl -MCPAN -e "install Crypt::OpenSSL::RSA"
+    ## or if you have cpanm installed
+    cpanm --installdeps .
 ```
 
 NB: Crypt::OpenSSL::RSA from CPAN requires SSL devel libraries which
     can be installed as follows:
 ```sh 
-  apt-get install libssl-dev ## for debian etc
-  yum install openssl-dev    ## for RH,Centos, Ubuntu etc
+  apt-get install libssl-dev   ## for debian etc
+  yum install openssl-devel    ## for RH,Centos, Ubuntu etc
 ```
 Make,test and install the library
 ```sh

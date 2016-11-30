@@ -3,38 +3,44 @@ package WebService::Xero::Organisation;
 use 5.006;
 use strict;
 use warnings;
+use Carp;
 
-use Data::Dumper;
 =head1 NAME
 
-WebService::Xero::Organisation - contains information about a Xero organisation
+WebService::Xero::Organisation - Object encapulates Organisation data returned by API
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
-our @PARAMS = qw/Name LegalName Version OrganisationType BaseCurrency CountryCode RegistrationNumber TaxNumber FinancialYearEndDay FinancialYearEndMonth LineOfBusiness /;
+our @PROPERTIES = qw/APIKey Name LegalName PaysTax Version BaseCurrency CountryCode IsDemoCompany OrganisationStatus 
+                     RegistrationNumber TaxNumber FinancialYearEndDay FinancialYearEndMonth 
+                    SalesTaxBasis SalesTaxPeriod DefaultSalesTax DefaultPurchasesTax PeriodLockDate EndOfYearLockDate
+                    CreatedDateUTC OrganisationEntityType OrganisationType Timezone ShortCode LineOfBusiness
+                    Addresses Phones ExternalLinks PaymentTerms
+                         /;
 
-
+## ValidationErrors Warnings
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+Object to describe an Organisation record as specified by Xero API and the associated DTD at 
+L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Organisation.xsd>.
 
 Perhaps a little code snippet.
 
     use  WebService::Xero::Organisation;
 
-    my $foo =  WebService::Xero::Organisation->new();
-    ...
+    my $org =  WebService::Xero::Organisation->new();
+    
+    or
 
-=head1 TODO
+    my $org = $xero_agent->api_account_organisation();
 
-consider inclusion of Locale modules - Locale::Currency and Locale::Country
 
 =head1 METHODS
 
@@ -48,13 +54,13 @@ sub new
 
     my $self = bless 
     {
-      APIKey       => $params{APIKey} || undef,
-      Name         => $params{Name} || '',
-      LegalName    => $params{LegalName}    || "",
-      debug => $params{debug}
-
+      API_URL      => 'https://api.xero.com/api.xro/2.0/organisation',
+      debug        => $params{debug} ## NOT REALLY USED YET
     }, $class;
-    foreach my $key (@PARAMS) { $self->{$key} = $params{$key} || '' }
+    foreach my $key (@PROPERTIES) { 
+      ## $self->{$key} = $params{$key} || '' 
+      $self->{$key} = defined $params{$key} ? $params{$key} : ''; ## thanks to https://metacpan.org/author/STEVEB
+    }
 
     return $self; #->_validate_agent(); ## derived classes will validate this
 
@@ -78,6 +84,9 @@ sub new_from_api_data
 
 =head2 as_text()
 
+  Returns a string with Carriage returns of each unique( non hash or array )
+  property -  useful for debugging. NB - doesn't include Array or Hash properties
+
 =cut
 
 
@@ -85,13 +94,17 @@ sub as_text
 {
     my ( $self ) = @_;
 
-    return join("\n", map { "$_ : $self->{$_}" } @PARAMS);
 
-
-
-
-
+    # return join("\n", map { "$_ : $self->{$_}" if (defined $self->{$_} and $_  !~ /Addresses|Phones|ExternalLinks|PaymentTerms/m ) } @PROPERTIES); ## this works ok
+    return "Organisation:\n" . join("\n", map { "$_ : $self->{$_}" if (defined $self->{$_} and ref($self->{$_}) !~ /ARRAY|HASH/m ) } @PROPERTIES);  ## this looks a little better?
 }
+
+
+
+=head1 TODO
+
+  consider inclusion of Locale modules - Locale::Currency and Locale::Country
+
 
 =head1 AUTHOR
 
@@ -106,36 +119,6 @@ Peter Scott, C<< <peter at computerpros.com.au> >>
 Please report any bugs or feature requests to C<bug-ccp-xero at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=CCP-Xero>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
-
-
-APIKey  
-Name        Display name of organisation shown in Xero
-LegalName   Organisation name shown on Reports
-PaysTax     Boolean to describe if organisation is registered with a local tax authority i.e. true, false
-Version     See Version Types
-OrganisationType    Organisation Type
-BaseCurrency    Default currency for organisation. See ISO 4217 Currency Codes
-CountryCode Country code for organisation. See ISO 3166-2 Country Codes
-  IsDemoCompany   Boolean to describe if organisation is a demo company.
-  OrganisationStatus  Will be set to ACTIVE if you can connect to organisation via the Xero API
-RegistrationNumber  Shows for New Zealand, Australian and UK organisations
-TaxNumber   Shown if set. Displays in the Xero UI as Tax File Number (AU), GST Number (NZ), VAT Number (UK) and Tax ID Number (US & Global).
-FinancialYearEndDay Calendar day e.g. 0-31
-FinancialYearEndMonth   Calendar Month e.g. 1-12
-SalesTaxBasis   The accounting basis used for tax returns. See Sales Tax Basis
-SalesTaxPeriod  The frequency with which tax returns are processed. See Sales Tax Period
-DefaultSalesTax The default for LineAmountTypes on sales transactions
-DefaultPurchasesTax The default for LineAmountTypes on purchase transactions
-PeriodLockDate  Shown if set. See lock dates
-EndOfYearLockDate   Shown if set. See lock dates
-CreatedDateUTC  Timestamp when the organisation was created in Xero
-OrganisationEntityType  Timezone specifications
-ShortCode   A unique identifier for the organisation. Potential uses.
-LineOfBusiness  Description of business type as defined in Organisation settings
-Addresses   Address details for organisation – see Addresses
-Phones  Phones details for organisation – see Phones
-ExternalLinks   Organisation profile links for popular services such as Facebook, Twitter, GooglePlus and LinkedIn. You can also add link to your website here. Shown if Organisation settings is updated in Xero. See ExternalLinks below
-PaymentTerms    Default payment terms for the organisation if set – See Payment Terms below
 
 
 
@@ -155,6 +138,13 @@ You can also look for information at:
 
 L<https://developer.xero.com/documentation/api/organisation/>
 
+=item * Xero API Schemas 
+
+L<https://github.com/XeroAPI/XeroAPI-Schemas>
+
+=item * Xero API Schema Organisation
+
+L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Organisation.xsd>
 
 =back
 

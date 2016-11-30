@@ -15,8 +15,9 @@ WriteMakefile(
         'ExtUtils::MakeMaker' => 0,
     },
     BUILD_REQUIRES => {
-        'Test::More' => 0,
+        'Test::More'   => 0.88,
         'Config::Tiny' => 0,
+        'JSON'     => 0,
     },
     PREREQ_PM => {
         'Config::Tiny'        => 0,
@@ -26,7 +27,7 @@ WriteMakefile(
         'Digest::MD5'         => 0,
         'URI::Encode'         => 0,
         'HTTP::Request'       => 0,
-        'JSON'                => 0,
+        'JSON'                => 0, ## not sure if need to include JSON::PP or JSON::PP here or build?
         'Data::Random'        => 0,
         'Net::OAuth'          => 0,
         'Mozilla::CA'         => 0,

@@ -3,6 +3,7 @@ package WebService::Xero::Contact;
 use 5.006;
 use strict;
 use warnings;
+use Carp;
 
 use Data::Dumper;
 =head1 NAME
@@ -122,7 +123,7 @@ sub new
       debug => $params{debug}
 
     }, $class;
-    foreach my $key (@PARAMS) { $self->{$key} = $params{$key} || '' }
+    foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
 
     return $self; #->_validate_agent(); ## derived classes will validate this
 

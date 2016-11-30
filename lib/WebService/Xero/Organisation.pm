@@ -3,11 +3,11 @@ package WebService::Xero::Organisation;
 use 5.006;
 use strict;
 use warnings;
+use Carp;
 
-use Data::Dumper;
 =head1 NAME
 
-WebService::Xero::Organisation - contains information about a Xero organisation
+WebService::Xero::Organisation - Object encapulates Organisation data returned by API
 
 =head1 VERSION
 
@@ -17,24 +17,30 @@ Version 0.11
 
 our $VERSION = '0.11';
 
-our @PARAMS = qw/Name LegalName Version OrganisationType BaseCurrency CountryCode RegistrationNumber TaxNumber FinancialYearEndDay FinancialYearEndMonth LineOfBusiness /;
+our @PROPERTIES = qw/APIKey Name LegalName PaysTax Version BaseCurrency CountryCode IsDemoCompany OrganisationStatus 
+                     RegistrationNumber TaxNumber FinancialYearEndDay FinancialYearEndMonth 
+                    SalesTaxBasis SalesTaxPeriod DefaultSalesTax DefaultPurchasesTax PeriodLockDate EndOfYearLockDate
+                    CreatedDateUTC OrganisationEntityType OrganisationType Timezone ShortCode LineOfBusiness
+                    Addresses Phones ExternalLinks PaymentTerms
+                         /;
 
-
+## ValidationErrors Warnings
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+Object to describe an Organisation record as specified by Xero API and the associated DTD at 
+L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Organisation.xsd>.
 
 Perhaps a little code snippet.
 
     use  WebService::Xero::Organisation;
 
-    my $foo =  WebService::Xero::Organisation->new();
-    ...
+    my $org =  WebService::Xero::Organisation->new();
+    
+    or
 
-=head1 TODO
+    my $org = $xero_agent->api_account_organisation();
 
-consider inclusion of Locale modules - Locale::Currency and Locale::Country
 
 =head1 METHODS
 
@@ -48,13 +54,13 @@ sub new
 
     my $self = bless 
     {
-      APIKey       => $params{APIKey} || undef,
-      Name         => $params{Name} || '',
-      LegalName    => $params{LegalName}    || "",
-      debug => $params{debug}
-
+      API_URL      => 'https://api.xero.com/api.xro/2.0/organisation',
+      debug        => $params{debug} ## NOT REALLY USED YET
     }, $class;
-    foreach my $key (@PARAMS) { $self->{$key} = $params{$key} || '' }
+    foreach my $key (@PROPERTIES) { 
+      ## $self->{$key} = $params{$key} || '' 
+      $self->{$key} = defined $params{$key} ? $params{$key} : ''; ## thanks to https://metacpan.org/author/STEVEB
+    }
 
     return $self; #->_validate_agent(); ## derived classes will validate this
 
@@ -78,6 +84,9 @@ sub new_from_api_data
 
 =head2 as_text()
 
+  Returns a string with Carriage returns of each unique( non hash or array )
+  property -  useful for debugging. NB - doesn't include Array or Hash properties
+
 =cut
 
 
@@ -85,13 +94,17 @@ sub as_text
 {
     my ( $self ) = @_;
 
-    return join("\n", map { "$_ : $self->{$_}" } @PARAMS);
 
-
-
-
-
+    # return join("\n", map { "$_ : $self->{$_}" if (defined $self->{$_} and $_  !~ /Addresses|Phones|ExternalLinks|PaymentTerms/m ) } @PROPERTIES); ## this works ok
+    return "Organisation:\n" . join("\n", map { "$_ : $self->{$_}" if (defined $self->{$_} and ref($self->{$_}) !~ /ARRAY|HASH/m ) } @PROPERTIES);  ## this looks a little better?
 }
+
+
+
+=head1 TODO
+
+  consider inclusion of Locale modules - Locale::Currency and Locale::Country
+
 
 =head1 AUTHOR
 
@@ -125,6 +138,13 @@ You can also look for information at:
 
 L<https://developer.xero.com/documentation/api/organisation/>
 
+=item * Xero API Schemas 
+
+L<https://github.com/XeroAPI/XeroAPI-Schemas>
+
+=item * Xero API Schema Organisation
+
+L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Organisation.xsd>
 
 =back
 

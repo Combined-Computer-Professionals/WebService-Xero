@@ -3,7 +3,7 @@ package WebService::Xero::Invoice;
 use 5.006;
 use strict;
 use warnings;
-
+use Carp;
 use Data::Dumper;
 =head1 NAME
 
@@ -52,7 +52,7 @@ sub new
       debug => $params{debug}
 
     }, $class;
-    foreach my $key (@PARAMS) { $self->{$key} = $params{$key} || '' }
+    foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
 
     return $self; #->_validate_agent(); ## derived classes will validate this
 
@@ -92,8 +92,12 @@ sub create_new_through_agent
 sub new_from_api_data
 {
   my ( $self, $data ) = @_;
-  return $self->new(  %{$data->{Invoices}[0]} ) if ( ref($data->{Invoices}) eq 'ARRAY' and scalar(@{$data->{Invoices}})==1 );  
-  if ( ref($data->{Invoices}) eq 'ARRAY' and scalar(@{$data->{Invoices}})>1 )
+  
+  if ( ref($data->{Invoices}) eq 'ARRAY' and scalar(@{$data->{Invoices}})==1 )
+  {
+    return $self->new(  %{$data->{Invoices}[0]} ) 
+  }
+  elsif ( ref($data->{Invoices}) eq 'ARRAY' and scalar(@{$data->{Invoices}})>1 )
   {
     my $invoices = [];
     foreach my $invoice_struct ( @{$data->{Invoices}} ) 
@@ -133,7 +137,7 @@ sub as_text
 {
     my ( $self ) = @_;
 
-    return join("\n", map { "$_ : $self->{$_}" } @PARAMS);
+    return "Invoice:\n" . join("\n", map { "$_ : $self->{$_}" } @PARAMS);
 
 
 }

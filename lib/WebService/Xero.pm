@@ -41,7 +41,7 @@ The simplest implementation uses a Private Application as follows:
 
     my $xero = WebService::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
                                                           CONSUMER_SECRET => 'YOUR_OAUTH_CONSUMER_SECRET', 
-                                                          KEYFILE         => "/path/to/privatekey.pem" 
+                                                          PRIVATE_KEY         => "-----BEGIN RSA PRIVATE KEY-----.........." 
                                                           );
     ## AND THEN ACCESS THE API POINTS
 
@@ -108,6 +108,19 @@ L<http://search.cpan.org/dist/WebService-Xero/>
 
 
 =head1 ACKNOWLEDGEMENTS
+
+=over 4
+
+=item * Net::Xero for the OAUTH Code 
+
+L<https://metacpan.org/pod/Net::Xero>
+
+
+=item * Steve Bertrand for advice on Perlmonks 
+
+L<https://metacpan.org/author/STEVEB>
+
+=back
 
 
 =head1 LICENSE AND COPYRIGHT

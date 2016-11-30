@@ -54,7 +54,7 @@ sub new
       SalesDetails    => { UnitPrice => 0, AccountCode => '', TaxType=> '', },
 
     }, $class;
-    foreach my $key (@PARAMS) { $self->{$key} = $params{$key} || '' }
+    foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
 
     $self->{PurchaseDetails}{UnitPrice} =  $params{PurchaseDetails}{UnitPrice} if defined $params{PurchaseDetails}{UnitPrice};
     $self->{PurchaseDetails}{COGSAccountCode} =  $params{PurchaseDetails}{COGSAccountCode} if defined $params{PurchaseDetails}{COGSAccountCode};
@@ -130,7 +130,7 @@ sub as_text
 {
     my ( $self ) = @_;
 
-    my $ret = join("\n", map { "$_ : $self->{$_}" } @PARAMS);
+    my $ret = "Item:\n" . join("\n", map { "$_ : $self->{$_}" } @PARAMS);
     $ret .= " PurchaseDetails::UnitPrice  $self->{PurchaseDetails}{UnitPrice}\n";
     $ret .= " PurchaseDetails::UnitPrice  $self->{PurchaseDetails}{UnitPrice}\n";
 

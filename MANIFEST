@@ -14,8 +14,9 @@ MANIFEST			This list of files
 README
 t/config/test_config.tpl
 t/00-load.t
-t/02-private_application.t
 t/01-agent.t
+t/02-private_application.t
+t/03-data_objects.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t

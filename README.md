@@ -26,6 +26,11 @@ This package is now available through [CPAN](http://search.cpan.org/~localshop/W
 sudo apt-get install perl build-essential ## eg debian package install
 ````
 
+### XML-SAX Dependency
+
+On AWS Linux you may need to install perl-XML-SAX using the package manager ````sudo yum install perl-XML-SAX````
+
+
 ## Installing Manually
 
 

@@ -7,7 +7,7 @@
 # THIS ENV WILL ALSO WORK FOR COMMAND LINE WHERE VALUES
 # ARE NOT PASSED INTO THE CONSTRUCTOR
 #
-# See README and 'perldoc Xero' for more detail
+# See README and 'perldoc WebService::Xero' for more detail
 #
 
 [PRIVATE_APPLICATION]

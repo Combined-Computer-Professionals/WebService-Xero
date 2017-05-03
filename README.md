@@ -14,7 +14,26 @@ points for Public, Private and in the future Partner application services.
 WebService::Xero modules primarily encapsulate the [OAuth (v1.0a) access control protocol as described by Cubrid](http://www.cubrid.org/blog/dev-platform/dancing-with-oauth-understanding-how-authorization-works/) .
 
 
+# Install from CPAN
+
 This package is now available through [CPAN](http://search.cpan.org/~localshop/WebService-Xero/)
+
+````sh
+
+  perl -MCPAN -e 'install WebService::Xero'
+
+````
+
+## XML-SAX Dependency
+
+Because of dependencies on native XML libraries by some of the modules dependencies you may need to install native expat / xml libraries.
+
+On AWS Linux you may need to install perl-XML-SAX using the package manager ````sudo yum install perl-XML-SAX perl-XML-Parser````
+
+For other platforms see the GitHub Wiki
+
+
+# Building from Source
 
 ## Prerequisites 
 
@@ -26,15 +45,12 @@ This package is now available through [CPAN](http://search.cpan.org/~localshop/W
 sudo apt-get install perl build-essential ## eg debian package install
 ````
 
-### XML-SAX Dependency
-
-On AWS Linux you may need to install perl-XML-SAX using the package manager ````sudo yum install perl-XML-SAX````
 
 
 ## Installing Manually
 
 
-This Perl code is in the standard CPAN package format and can be installed through CPAN or downloaded and installed manually either from GitHub or CPAN:
+This Perl code is in the standard CPAN package format and can be installed through CPAN or downloaded and installed manually either from [GitHub](https://github.com/Combined-Computer-Professionals/WebService-Xero) or CPAN:
 
 ```sh
   perl Makefile.PL
@@ -152,12 +168,16 @@ CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-### Development Support
+### Contributors / Support
 
-Want to contribute? Great, get in touch!
+Want to contribute? Great, [get in touch!](mailto:peter@computerpros.com.au)
 Need some help with your setup - will try to help where I can.
 
+Many thanks to the following for help and suggestions:
 
-[Xeroizer]: <https://github.com/waynerobinson/xeroizer/README.md>
+  * Neil Grooby from [Xero Developer Team](https://developer.xero.com/)
+  * Steve Bertrand for advice on [Perlmonks](https://perlmonks.org) 
+
+[Xeroizer]: <https://github.com/waynerobinson/xeroizer/>
   
 

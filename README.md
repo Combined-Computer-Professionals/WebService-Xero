@@ -129,7 +129,7 @@ perldoc WebService::Xero
 LICENSE AND COPYRIGHT
 ----
 
-Copyright 2016 Peter Scott.
+Copyright 2016-2017 Peter Scott.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a

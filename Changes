@@ -1,7 +1,9 @@
 Revision history for WebService-Xero
 
-0.12    December, 2016
+0.12    December, 2016 - 10th May 2017
         Refinements to Data objects (Contact,Invoice,Item,Organization etc)
+        added https dependency and refined docs and tests
+        added new object classes
 
 0.11    Decemner, 2016
         Document cleanup, more tests, minor tweaks

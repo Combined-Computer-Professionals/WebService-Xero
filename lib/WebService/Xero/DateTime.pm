@@ -1,126 +1,64 @@
-package WebService::Xero::Contact;
+package WebService::Xero::DateTime;
+use DateTime;
 
-use 5.006;
-use strict;
-use warnings;
-use Carp;
-
-use Data::Dumper;
-use WebService::Xero::DateTime;
+=pod 
 
 =head1 NAME
 
-WebService::Xero::Contact - encapsulates a Xero API Contact record
+WebService::Xero::DateTime - Helper to manage Xero formatted JSON DateTime data
 
 =head1 VERSION
 
 Version 0.12
 
-=cut
-
-our $VERSION = '0.12';
-
-our @PARAMS = qw/ContactID ContactStatus Name FirstName LastName EmailAddress BankAccountDetails UpdatedDateUTC IsCustomer IsSupplier HasAttachments HasValidationErrors
-                 Addresses Phones ContactGroups ContactPersons
-                /;
-
-
-
 =head1 SYNOPSIS
 
-
-Object to describe an Contact record as specified by Xero API and the associated DTD at 
-L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Contact.xsd>.
-
-Mostly a wrapper for Xero Contact data structure.
-
-
-
-
-Example.
-
-    use  WebService::Xero::Contact;
-
-    my $agent            = WebService::Xero::Agent::PrivateApplication->new( ... etc 
-    my $contact_response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts' ) || die( 'TODO: add a reference to error condition' );
-
-    my $contact =  WebService::Xero::Contact->new( $contact_response );
-    print $contact->as_text();
+A helper class for date handling.
 
 =head2 NOTES
 
-    You can upload up to 10 attachments(each up to 3mb in size) per contact, once the contact has been created in Xero.
+    
 
 =head1 METHODS
 
 =head2 new()
 
+  INPUT: single parameter string in Xero JSON format
+
 =cut
+
+
+our $VERSION = '0.12';
 
 sub new 
 {
-  my ( $class, %params ) = @_;
-
-    my $self = bless 
+    my ( $class, $xero_date_string ) = @_;
+    my $self = {
+      _utc => 0,
+    };
+    if ( $xero_date_string =~ /Date\((\d+)[^\d]/smg )
     {
-      debug => $params{debug},
-      API_URL => 'https://api.xero.com/api.xro/2.0/Contacts',
+        my $utc_str = $1;
+        $self->{_utc} = DateTime->from_epoch( epoch => $utc_str/1000 ) || die("critical failure creating date from $xero_date_string");
 
-    }, $class;
-    foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
-
-    ## ContactStatus: [ ACTIVE || ARCHIVED ]
-
-    return $self; #->_validate_agent(); ## derived classes will validate this
-
+        return bless $self, $class;
+    }
+    return undef; ## default if conditions aren't right
+    
 }
 
 
-=head2 new_from_api_data()
+=head2 as_datetime()
 
-  creates a new instance from the data provided by querying the API organisation end point 
-  ( typically handled by WebService::Xero::Agent->do_xero_api_call() )
-
-  Example Contact Queries using Xero Agent that return Data consumable by this method:
-    https://api.xero.com/api.xro/2.0/Contacts
-
-  Returns undef, a single object instance or an array of object instances depending on the data input provided.
-
-
-=cut 
-
-sub new_from_api_data
-{
-  my ( $self, $data ) = @_;
-  return WebService::Xero::Contact->new(  %{$data->{Contacts}[0]} ) if ( ref($data->{Contacts}) eq 'ARRAY' and scalar(@{$data->{Contacts}})==1 );  
-  return WebService::Xero::Contact->new( debug=> $data );  
-
-}
-
-=head2 as_text()
-
-  mostly for debugging.
+  returns DateTime object
 
 =cut
 
-
-sub as_text 
+sub as_datetime
 {
     my ( $self ) = @_;
+    return $self->{_utc};
 
-    return join("\n", map { "$_ : $self->{$_}" } @PARAMS);
-}
-
-
-=head2 as_json()
-
-  mostly for debugging.
-
-=cut
-sub as_json
-{
-  my ( $self ) = @_; 
-  return undef; ## TODO:
 }
 
 =head1 AUTHOR
@@ -206,4 +144,5 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 =cut
 
-1; # End of WebService::Xero
+1; # End of WebService::Xero::DateTime
+

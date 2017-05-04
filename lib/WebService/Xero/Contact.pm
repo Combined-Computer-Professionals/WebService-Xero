@@ -6,6 +6,8 @@ use warnings;
 use Carp;
 
 use Data::Dumper;
+use WebService::Xero::DateTime;
+
 =head1 NAME
 
 WebService::Xero::Contact - encapsulates a Xero API Contact record
@@ -33,12 +35,21 @@ L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/Xero
 Mostly a wrapper for Xero Contact data structure.
 
 
-Perhaps a little code snippet.
+
+
+Example.
 
     use  WebService::Xero::Contact;
 
-    my $foo =  WebService::Xero::Contact->new();
+    my $agent            = WebService::Xero::Agent::PrivateApplication->new( ... etc 
+    my $contact_response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts' ) || die( 'TODO: add a reference to error condition' );
 
+    my $contact =  WebService::Xero::Contact->new( $contact_response );
+    print $contact->as_text();
+
+=head2 NOTES
+
+    You can upload up to 10 attachments(each up to 3mb in size) per contact, once the contact has been created in Xero.
 
 =head1 METHODS
 
@@ -57,6 +68,8 @@ sub new
 
     }, $class;
     foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
+
+    ## ContactStatus: [ ACTIVE || ARCHIVED ]
 
     return $self; #->_validate_agent(); ## derived classes will validate this
 
@@ -96,8 +109,11 @@ sub as_text
     my ( $self ) = @_;
 
     return join("\n", map { "$_ : $self->{$_}" } @PARAMS);
+}
 
-
+sub as_json
+{
+  my ( $self ) = @_;  
 }
 
 =head1 AUTHOR

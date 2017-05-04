@@ -91,6 +91,9 @@ sub _validate_agent
 
 
 
+
+
+
 =head2 get_all_xero_products_from_xero()
 
   Experimental: a shortcut to do_xero_api_call
@@ -151,6 +154,7 @@ sub get_all_customer_invoices_from_xero
 
     The response is requested in JSON format which is then processed into a Perl structure that
     is returned to the caller.
+    TODO: handle http response codes as per https://developer.xero.com/documentation/api/http-response-codes
 
 
 =cut 

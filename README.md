@@ -30,7 +30,9 @@ Because of dependencies on native XML libraries by some of the modules dependenc
 
 On AWS Linux you may need to install perl-XML-SAX using the package manager ````sudo yum install perl-XML-SAX perl-XML-Parser````
 
-For other platforms see the GitHub Wiki
+For other platforms see the [GitHub Wiki](https://github.com/pscott-au/CCP-Xero/wiki/Installation-Dependency-Issues)
+
+
 
 
 # Building from Source
@@ -86,10 +88,23 @@ NB: Crypt::OpenSSL::RSA from CPAN requires SSL devel libraries which
   apt-get install libssl-dev   ## for debian etc
   yum install openssl-devel    ## for RH,Centos, Ubuntu etc
 ```
+
+Set ENV vars if you require verbose testing.
+````sh
+export   RELEASE_TESTING=1
+export   AUTHOR_TESTING=1
+
+````
+NB: you can also copy the template config file in t/config/test_config.tpl to t/config/test_config.ini to use API credentials in your testing 
+
+
 Make,test and install the library
 ```sh
 make
 make test
+## or for verbose test
+make test TEST_VERBOSE=1
+
 make install
 ```
 
@@ -118,9 +133,11 @@ An example of a minimalistic Mojolicious framework Public Application implementa
 See perldoc for details
 ````sh
 perldoc WebService::Xero
+perldoc WebService::Xero::Agent::PublicApplication
+perldoc WebService::Xero::Agent::PrivateApplication
 ````
 
-### Todos
+### To-do's
 
  - Classes for all Xero Components ( Item, Contact, Invoice etc )
  - Working Public Application Example 
@@ -179,5 +196,6 @@ Many thanks to the following for help and suggestions:
   * Steve Bertrand for advice on [Perlmonks](https://perlmonks.org) 
 
 [Xeroizer]: <https://github.com/waynerobinson/xeroizer/>
+[Developer Blog]: <https://xero.computerpros.net.au>
   
 

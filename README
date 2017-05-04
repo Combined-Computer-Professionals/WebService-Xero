@@ -27,7 +27,7 @@ NB: People report that they are unable to install the dependency  Crypt::OpenSSL
   apt-get install libssl-dev ## for debian etc
   yum install openssl-dev    ## for RH,Centos, Ubuntu etc
 
-On AWS Linux you may need to install perl-XML-SAX using the package manager ````sudo yum install perl-XML-SAX````
+On AWS Linux you may need to install perl-XML-SAX using the package manager ````sudo yum install perl-XML-SAX perl-XML-Parser````
 
 
 
@@ -61,8 +61,12 @@ You can also look for information at:
     Search CPAN
         http://search.cpan.org/dist/CCP-Xero/
 
+    Developer Blog
+        https://xero.computerpros.net.au/
+
 SEE ALSO
 
+  * Develop GitHub Repo at https://github.com/pscott-au/CCP-Xero/
   * Xero Ruby API Library https://github.com/waynerobinson/xeroizer/
   * CPAN Net::Xero 
 

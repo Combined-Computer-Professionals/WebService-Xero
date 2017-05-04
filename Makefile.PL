@@ -31,6 +31,8 @@ WriteMakefile(
         'Data::Random'        => 0,
         'Net::OAuth'          => 0,
         'Mozilla::CA'         => 0,
+        'DateTime'            => 0,
+        'LWP::Protocol::https' => 0
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'WebService-Xero-*' },

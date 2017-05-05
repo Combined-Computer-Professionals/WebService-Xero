@@ -40,7 +40,13 @@ sub new
     {
         my $utc_str = $1;
         $self->{_utc} = DateTime->from_epoch( epoch => $utc_str/1000 ) || die("critical failure creating date from $xero_date_string");
+        print "created " . $self->{_utc} . "\n\n";
 
+        return bless $self, $class;
+    } 
+    else 
+    {
+        print "ISSUE !!!\n";
         return bless $self, $class;
     }
     return undef; ## default if conditions aren't right
@@ -58,7 +64,12 @@ sub as_datetime
 {
     my ( $self ) = @_;
     return $self->{_utc};
+}
 
+sub as_text
+{
+    my ( $self ) = @_;
+    return $self->{_utc} . "";
 }
 
 =head1 AUTHOR

@@ -9,16 +9,17 @@ use Data::Dumper;
 use File::Slurp; ## readfile
 use DateTime;
 use Time::Local;
+use WebService::Xero::DateTime;
 use feature 'say';
 my $DEBUG = 1; ## if set display debug info
 
 =pod
 
-=head1 private_company_account_details.pl
+=head1 private_contact_details.pl
 
 =head2 CONFIGURATION
 
-private application credentials are assumed to have been specified in the 
+private application credentials are assumed to have been specified in the t/config/test_config.ini file
 
 =head2 USAGE
 
@@ -86,27 +87,4 @@ print Dumper $contact_response; ## should contain an array of hashes containing 
 
 
 
-package WebService::Xero::DateTime;
-sub new 
-{
-    my ( $class, $xero_date_string ) = @_;
-    my $self = {
-      _utc => 0,
-    };
-    if ( $xero_date_string =~ /Date\((\d+)[^\d]/smg )
-    {
-        $utc_str = $1;
-        $self->{_utc} = DateTime->from_epoch( epoch => $utc_str/1000 ) || die("critical failure creating date from $xero_date_string");
 
-        return bless $self, $class;
-    }
-    return undef; ## default if conditions aren't right
-    
-}
-
-sub as_datetime
-{
-    my ( $self ) = @_;
-    return $self->{_utc};
-
-}

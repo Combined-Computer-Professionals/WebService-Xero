@@ -103,9 +103,9 @@ BEGIN {
 
 
     use_ok( 'WebService::Xero::Contact' ) || print "Bail out!\n";
-    ok( my $contact_obj = WebService::Xero::Contact->new(), 'WebService::Xero::Contact->new()');
-    is( ref($contact_obj), 'WebService::Xero::Contact', 'created WebService::Xero::Contact object is the right type' );
-    like( $contact_obj->as_text(), qr/Contact/, 'WebService::Xero::Contact->as_text()' );
+    #ok( my $contact_obj = WebService::Xero::Contact->new(), 'WebService::Xero::Contact->new()');
+    #is( ref($contact_obj), 'WebService::Xero::Contact', 'created WebService::Xero::Contact object is the right type' );
+    #like( $contact_obj->as_text(), qr/Contact/, 'WebService::Xero::Contact->as_text()' );
 
 }
 

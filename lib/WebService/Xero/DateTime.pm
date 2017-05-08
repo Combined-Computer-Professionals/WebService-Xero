@@ -72,6 +72,17 @@ sub as_text
     return $self->{_utc} . "";
 }
 
+=head2 TO_JSON()
+
+  mostly for debugging.
+
+=cut
+sub TO_JSON
+{
+  my ( $self ) = @_;
+  return $self->as_text();
+}
+
 =head1 AUTHOR
 
 Peter Scott, C<< <peter at computerpros.com.au> >>

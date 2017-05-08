@@ -6,8 +6,11 @@ use warnings;
 use Carp;
 
 use Data::Dumper;
+use JSON::XS;
 use WebService::Xero::DateTime;
-
+use WebService::Xero::Phone;
+use WebService::Xero::Address;
+use WebService::Xero::ContactPerson;
 =head1 NAME
 
 WebService::Xero::Contact - encapsulates a Xero API Contact record
@@ -89,6 +92,24 @@ sub new
     {
       $self->{UpdatedDateUTC} = WebService::Xero::DateTime->new( "$self->{UpdatedDateUTC}" );
      # print Dumper   $self->{UpdatedDateUTC} ;
+    }
+    if ( ref( $self->{Phones} ) eq 'ARRAY' ) 
+    {
+      my $phones_list = $self->{Phones};
+      $self->{Phones} = [];
+      foreach my $phone ( @{$phones_list})
+      {
+        push $self->{Phones}, WebService::Xero::Phone->new( $phone );
+      }
+    }
+    if ( ref( $self->{Addresses} ) eq 'ARRAY' ) 
+    {
+      my $address_list = $self->{Addresses};
+      $self->{Addresses} = [];
+      foreach my $address ( @{$address_list})
+      {
+        push $self->{Addresses}, WebService::Xero::Address->new( $address );
+      }
     }
     #$self->{UpdatedDateUTC} = WebService::Xero::DateTime->new( "$self->{UpdatedDateUTC}" ) 
     #print Dumper $self->{UpdatedDateUTC} . "\n";
@@ -215,15 +236,13 @@ sub as_text
           $item_class = "$prop as hashes" if $item_class eq 'HASH';
           $ret .= "$count Records ($item_class)" . $sep;
         }
-        
-
       }
       else
       {
         $ret .= ref($self->{$prop}) . "$sep";
       }
     }
-    $head =~ s/$sep$/\n/smg; ## reaplce trailing sep from head with newline
+    $head =~ s/$sep$/\n/smg; ## replace trailing sep from head with newline
     $ret =~ s/$sep$//smg; ## remove trailing sep from return value
 
     #$ret .= join("\n", map { "$_ : $self->{$_} :: ref='" . ref($self->{$_}) . "'" if (ref($self->{$_}) eq '') } @PARAMS);# . "UpdateDateUTC" . $self->{UpdateDateUTC}->as_datetime();
@@ -232,16 +251,68 @@ sub as_text
 }
 
 
+
 =head2 as_json()
 
-  mostly for debugging.
+  returns the object including all properties as a JSON struct.
 
-=cut
+=cut 
 sub as_json
 {
-  my ( $self ) = @_; 
-  return undef; ## TODO:
+  my ( $self ) = @_;
+  my $json = new JSON::XS;
+  $json = $json->convert_blessed ([1]);
+  return  $json->encode( $self ) ; 
 }
+
+
+
+=head2 TO_JSON()
+
+  is called by a potential parent to_json that recursively looks for an unblssed version using calls to TO_JSON.
+
+=cut
+sub TO_JSON
+{
+  my ( $self ) = @_; 
+  return {
+            ContactID      => $self->{ContactID},
+            ContactNumber => $self->{ContactNumber},
+            ContactStatus => $self->{ContactStatus},
+            AccountNumber => $self->{AccountNumber},
+            Name => $self->{Name},
+            FirstName => $self->{FirstName},
+            LastName => $self->{LastName},
+            EmailAddress => $self->{EmailAddress},
+            SkypeUserName => $self->{SkypeUserName},
+            BankAccountDetails => $self->{BankAccountDetails},
+            TaxNumber => $self->{TaxNumber},
+            AccountsReceivableTaxType => $self->{AccountsReceivableTaxType},
+            AccountsPayableTaxType => $self->{AccountsPayableTaxType},
+            UpdatedDateUTC => $self->{UpdatedDateUTC}, #->TO_JSON(),
+            IsCustomer => $self->{IsCustomer},
+            IsSupplier => $self->{IsSupplier},
+            HasAttachments => $self->{HasAttachments},
+            HasValidationErrors => $self->{HasValidationErrors},
+            Addresses  => $self->{Addresses},
+            Phones  => $self->{Phones}, #$self->Phones_as_JSON(),
+ContactGroups  => $self->{ContactGroups},
+ContactPersons => $self->{ContactPersons},
+DefaultCurrency => $self->{DefaultCurrency},
+  }; 
+}
+
+
+#sub Phones_as_JSON
+#{
+#  my ( $self ) = @_;
+#  my $ret = [];
+#  foreach my $phone ( @{$self->{Phones}} )
+#  {
+#    push @$ret, $phone->TO_JSON();
+#  }
+#  return $ret;
+#}
 
 =head1 AUTHOR
 

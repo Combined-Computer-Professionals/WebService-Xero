@@ -8,6 +8,7 @@ lib/WebService/Xero/Contact.pm
 lib/WebService/Xero/Invoice.pm
 lib/WebService/Xero/Item.pm
 lib/WebService/Xero/DateTime.pm
+lib/WebService/Xero/ContactPerson.pm
 lib/WebService/Xero/Agent/PrivateApplication.pm
 lib/WebService/Xero/Agent/PublicApplication.pm
 Makefile.PL

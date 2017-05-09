@@ -1,6 +1,6 @@
 package WebService::Xero::Contact;
 
-use 5.006;
+use 5.012;
 use strict;
 use warnings;
 use Carp;
@@ -44,7 +44,7 @@ Also provide a few helper functions such as get_all_using_agent() which includes
 
 
 
-Example 1>
+=head2 Example 1
 
     use WebService::Xero::Agent::PrivateApplication;
     use  WebService::Xero::Contact;
@@ -55,8 +55,8 @@ Example 1>
     my $contact =  WebService::Xero::Contact->new( $contact_response->{Contacts}[0] );
     print $contact->as_text();
 
-Example 2>
-    WebService::Xero::Agent::PrivateApplication;
+=head2 Example 2
+    use WebService::Xero::Agent::PrivateApplication;
     use  WebService::Xero::Contact;
     my $agent            = WebService::Xero::Agent::PrivateApplication->new( ... etc     
 
@@ -66,6 +66,8 @@ Example 2>
       # print $contact->as_json();
       print "$contact->{Name} $contact->{FirstName} $contact->{LastName} $contact->{EmailAddress}\n";
     }
+
+
 
 =head2 NOTES FROM XERO DOCS
 
@@ -83,7 +85,8 @@ Example 2>
     You can upload up to 10 attachments(each up to 3mb in size) per contact, once the contact has been created in Xero.
 
 
-    XSD Available at https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Contact.xsd
+    XSD Available at L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Contact.xsd>
+    API Previewer available at L<https://app.xero.com/Preview/contacts>
 
 =head1 METHODS
 
@@ -115,7 +118,7 @@ sub new
       $self->{Phones} = [];
       foreach my $phone ( @{$phones_list})
       {
-        push $self->{Phones}, WebService::Xero::Phone->new( $phone );
+        push $self->{Phones}, WebService::Xero::Phone->new( $phone ) || return $self->_error('Failed to create Phone instance');
       }
     }
     if ( ref( $self->{Addresses} ) eq 'ARRAY' ) 
@@ -124,11 +127,13 @@ sub new
       $self->{Addresses} = [];
       foreach my $address ( @{$address_list})
       {
-        push $self->{Addresses}, WebService::Xero::Address->new( $address );
+        push $self->{Addresses}, WebService::Xero::Address->new( $address ) || return $self->_error('Failed to create Address instance');
       }
     }
 
     ## ContactStatus: [ ACTIVE || ARCHIVED ]
+
+    ## TODO: if not looking to use Moose then consider creating Moose-like getters and setters.
 
     return $self; #->_validate_agent(); ## derived classes will validate this
 
@@ -345,6 +350,60 @@ Peter Scott, C<< <peter at computerpros.com.au> >>
 
 
 =head1 REFERENCE
+
+=head2 PROPERTIES
+
+The following properties can be accessed as hash keyed values such as $contact->{ContactID}
+
+=over 4
+
+=item  * AccountNumber
+
+=item  * AccountsPayableTaxType
+
+=item  * AccountsReceivableTaxType
+
+=item  * Addresses
+
+=item  * BankAccountDetails
+
+=item  * ContactGroups
+
+=item  * ContactID
+
+=item  * ContactNumber
+
+=item  * ContactPersons
+
+=item  * ContactStatus
+
+=item  * DefaultCurrency
+
+=item  * EmailAddress
+
+=item  * FirstName
+
+=item  * HasAttachments
+
+=item  * HasValidationErrors
+
+=item  * IsCustomer
+
+=item  * IsSupplier
+
+=item  * LastName
+
+=item  * Name
+
+=item  *  Phones
+
+=item  *  SkypeUserName
+
+=item  * TaxNumber
+
+=item  * UpdatedDateUTC
+
+=back
 
 
 =head1 BUGS

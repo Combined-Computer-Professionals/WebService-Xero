@@ -69,8 +69,6 @@ sub create_new_through_agent
   croak('need a valid agent parameter') unless (  ref( $params{agent} ) =~ /Agent/m  ); ## 
 
   my $new = WebService::Xero::Invoice->new( %params );
-
-  ## TODO: Create 
   return $new;
 }
 

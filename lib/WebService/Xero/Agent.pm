@@ -258,7 +258,8 @@ sub _error
 {
   my ( $self, $msg ) = @_;
   carp( $self->{_status} = $msg);
-  return $self->{_ERROR_VAL}; ##undef
+  #$self->{_ERROR_VAL}; ##undef
+  return undef;
 }
 
 

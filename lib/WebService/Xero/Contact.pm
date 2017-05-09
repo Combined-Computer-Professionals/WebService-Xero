@@ -24,9 +24,7 @@ Version 0.12
 our $VERSION = '0.12';
 
 our @PARAMS = qw/ContactID ContactNumber ContactStatus AccountNumber Name FirstName LastName EmailAddress SkypeUserName 
-                 
                  BankAccountDetails TaxNumber AccountsReceivableTaxType AccountsPayableTaxType
-
                  UpdatedDateUTC IsCustomer IsSupplier HasAttachments HasValidationErrors
                  Addresses Phones ContactGroups ContactPersons DefaultCurrency
                 /;
@@ -39,22 +37,37 @@ our @PARAMS = qw/ContactID ContactNumber ContactStatus AccountNumber Name FirstN
 Object to describe an Contact record as specified by Xero API and the associated DTD at 
 L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Contact.xsd>.
 
-Mostly a wrapper for Xero Contact data structure.
+Class to encapsulate Xero Contact data structure and handles some of the conversion for nested structures, dates and booleans to 
+assist in manipulating. 
+
+Also provide a few helper functions such as get_all_using_agent() which includes paging.
 
 
 
+Example 1>
 
-Example.
-
+    use WebService::Xero::Agent::PrivateApplication;
     use  WebService::Xero::Contact;
 
     my $agent            = WebService::Xero::Agent::PrivateApplication->new( ... etc 
-    my $contact_response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts' ) || die( 'TODO: add a reference to error condition' );
+    my $contact_response = $agent->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts/297c2dc5-cc47-4afd-8ec8-74990b8761e9' ) || die( 'check the agent for error message' );
 
-    my $contact =  WebService::Xero::Contact->new( $contact_response );
+    my $contact =  WebService::Xero::Contact->new( $contact_response->{Contacts}[0] );
     print $contact->as_text();
 
-=head2 NOTES
+Example 2>
+    WebService::Xero::Agent::PrivateApplication;
+    use  WebService::Xero::Contact;
+    my $agent            = WebService::Xero::Agent::PrivateApplication->new( ... etc     
+
+    my $contact_list = WebService::Xero::Contact->get_all_using_agent( agent=> $agent ); 
+    foreach my $contact ( @$contact_list )
+    {
+      # print $contact->as_json();
+      print "$contact->{Name} $contact->{FirstName} $contact->{LastName} $contact->{EmailAddress}\n";
+    }
+
+=head2 NOTES FROM XERO DOCS
 
     Optional parameters for GET Contacts
       Record filter
@@ -68,6 +81,9 @@ Example.
       includeArchived
 
     You can upload up to 10 attachments(each up to 3mb in size) per contact, once the contact has been created in Xero.
+
+
+    XSD Available at https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Contact.xsd
 
 =head1 METHODS
 
@@ -111,8 +127,6 @@ sub new
         push $self->{Addresses}, WebService::Xero::Address->new( $address );
       }
     }
-    #$self->{UpdatedDateUTC} = WebService::Xero::DateTime->new( "$self->{UpdatedDateUTC}" ) 
-    #print Dumper $self->{UpdatedDateUTC} . "\n";
 
     ## ContactStatus: [ ACTIVE || ARCHIVED ]
 
@@ -125,12 +139,12 @@ sub new
   Input Parameters: 
      agent => an agent of type Xero::WebService::Agent::* - this is used to handle to handle the communciation with Xero Servers
      filters => { ## an optional set of parameters to be passed as part of the request to xero
-       
+       not implemented yet
      }
 
   Process:
-    Construct the query string using filters if provided and use the agent to request data through the Xero API.
-    Return the results as valid WebService::Xero::Contact object(s) or return undef
+    Construct a paged query string using filters if provided and use the agent to request data through the Xero API.
+    Return the results as valid WebService::Xero::Contact object(s) or empty array
 
   Output:
     If there was an error then undef is returned and the agent will contain the description of the issue.
@@ -140,19 +154,25 @@ sub new
 
 =cut 
 
-sub new_using_agent
+sub get_all_using_agent
 {
-  my ( $class, %params ) = @_;
-  return $class::_error('agent is a required parameter') unless ( ref( $params{agent} ) =~ /^Xero::WebService::Agent/m);
+  my ( $self, %params ) = @_;
+  $self = WebService::Xero::Contact->new() if ( $self eq 'WebService::Xero::Contact'); ## create an instance if called without one
+  return $self->_error('agent is a required parameter') unless ( ref( $params{agent} ) =~ /^WebService::Xero::Agent/m);
 
-  if  ( my $res = $params{agent}->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts' ) )
+  my $page = 1; my $finished = 0; my $all_contacts = [];
+  do  ## 'https://api.xero.com/api.xro/2.0/Contacts'
   {
-    ## check if response is valid
-    ## construct either a single
-  } 
-
-  ## get filter parameters
-
+    if ( my $res = $params{agent}->do_xero_api_call( "$self->{API_URL}?page=$page" ) )
+    {
+      $page++;
+      my $paged_contacts = $self->new_array_from_api_data( $res );
+      $finished = 1 if (@$paged_contacts != 100 );
+      push @$all_contacts, @$paged_contacts;
+    }
+    else return undef; ## agent returned an error - check the agent status for details
+  } until ( $finished == 1 );
+  return $all_contacts;
 }
 
 =head2 new_from_api_data()
@@ -168,17 +188,24 @@ sub new_using_agent
 
 =cut 
 
-sub new_from_api_data
+sub new_array_from_api_data
 {
   my ( $self, $data ) = @_;
-  return WebService::Xero::Contact->new(  %{$data->{Contacts}[0]} ) if ( ref($data->{Contacts}) eq 'ARRAY' and scalar(@{$data->{Contacts}})==1 );  
-  return WebService::Xero::Contact->new( debug=> $data );  
+  #return WebService::Xero::Contact->new(  %{$data->{Contacts}[0]} ) if ( ref($data->{Contacts}) eq 'ARRAY' and scalar(@{$data->{Contacts}})==1 );
+  # using above returns a single object if only 1 element is data .. removed to consistently return an array - even if only 1 element.
+  my $contacts_list = [];
+  foreach my $contact  ( @{$data->{Contacts}} )
+  {
+    push @$contacts_list, WebService::Xero::Contact->new( %{$contact} );
+  }
+  return $contacts_list;
+  # return WebService::Xero::Contact->new( debug=> $data );  
 
 }
 
 =head2 as_text()
 
-  mostly for debugging.
+  useful for debugging.
 
 =cut
 
@@ -277,42 +304,37 @@ sub TO_JSON
   my ( $self ) = @_; 
   return {
             ContactID      => $self->{ContactID},
-            ContactNumber => $self->{ContactNumber},
-            ContactStatus => $self->{ContactStatus},
-            AccountNumber => $self->{AccountNumber},
-            Name => $self->{Name},
-            FirstName => $self->{FirstName},
-            LastName => $self->{LastName},
-            EmailAddress => $self->{EmailAddress},
-            SkypeUserName => $self->{SkypeUserName},
+            ContactNumber  => $self->{ContactNumber},
+            ContactStatus  => $self->{ContactStatus},
+            AccountNumber  => $self->{AccountNumber},
+            Name           => $self->{Name},
+            FirstName      => $self->{FirstName},
+            LastName       => $self->{LastName},
+            EmailAddress   => $self->{EmailAddress},
+            SkypeUserName  => $self->{SkypeUserName},
             BankAccountDetails => $self->{BankAccountDetails},
-            TaxNumber => $self->{TaxNumber},
+            TaxNumber      => $self->{TaxNumber},
             AccountsReceivableTaxType => $self->{AccountsReceivableTaxType},
             AccountsPayableTaxType => $self->{AccountsPayableTaxType},
             UpdatedDateUTC => $self->{UpdatedDateUTC}, #->TO_JSON(),
-            IsCustomer => $self->{IsCustomer},
-            IsSupplier => $self->{IsSupplier},
+            IsCustomer     => $self->{IsCustomer},
+            IsSupplier     => $self->{IsSupplier},
             HasAttachments => $self->{HasAttachments},
             HasValidationErrors => $self->{HasValidationErrors},
-            Addresses  => $self->{Addresses},
-            Phones  => $self->{Phones}, #$self->Phones_as_JSON(),
-ContactGroups  => $self->{ContactGroups},
-ContactPersons => $self->{ContactPersons},
-DefaultCurrency => $self->{DefaultCurrency},
+            Addresses      => $self->{Addresses},
+            Phones         => $self->{Phones}, #$self->Phones_as_JSON(),
+            ContactGroups  => $self->{ContactGroups},
+            ContactPersons => $self->{ContactPersons},
+            DefaultCurrency => $self->{DefaultCurrency},
   }; 
 }
 
-
-#sub Phones_as_JSON
-#{
-#  my ( $self ) = @_;
-#  my $ret = [];
-#  foreach my $phone ( @{$self->{Phones}} )
-#  {
-#    push @$ret, $phone->TO_JSON();
-#  }
-#  return $ret;
-#}
+sub _error
+{
+  my ( $self, $msg ) = @_;
+  warn( $msg );
+  return undef;
+}
 
 =head1 AUTHOR
 

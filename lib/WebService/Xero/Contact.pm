@@ -170,7 +170,10 @@ sub get_all_using_agent
       $finished = 1 if (@$paged_contacts != 100 );
       push @$all_contacts, @$paged_contacts;
     }
-    else return undef; ## agent returned an error - check the agent status for details
+    else 
+    {
+       return $self->_error('FAILED: agent returned an error - check the agent status for details');
+    }
   } until ( $finished == 1 );
   return $all_contacts;
 }

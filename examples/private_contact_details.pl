@@ -115,7 +115,8 @@ if ( 1==2 ) ## demonstration by calling the class method get_all_using_agent to 
 ##
 ## my $contact_response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts/' . '?where=EmailAddress!=null' ) || die( 'Contacts Request failed: ' . $xero->{_status} );
 ## do_xero_api_call( $self, $uri, $method, $xml ) )
-
+if ( 1==2)
+{
  my $contact_response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts','POST', 
 q{
 <Contact>
@@ -141,6 +142,7 @@ q{
 } ) || die( 'Contacts Request failed: ' . $xero->{_status} );
 # print Dumper $contact_response;
 print "Agent Status = $xero->{status} \n\nResponse Status = $contact_response->{Status}\n";
+}
 
 
 

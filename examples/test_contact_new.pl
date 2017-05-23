@@ -4,7 +4,9 @@ use strict;
 use warnings;
 use WebService::Xero::Contact;
 use WebService::Xero::DateTime;
-use JSON::PP;
+
+use JSON::XS;
+use JSON qw/encode_json/;
 use Data::Dumper;
 
 
@@ -12,12 +14,12 @@ use Data::Dumper;
 
 my $c = WebService::Xero::Contact->new(
 
-                            'IsSupplier' => JSON::PP::false,
+                            'IsSupplier' => JSON::XS::false,
                             'ContactStatus' => 'ACTIVE',
                             'BankAccountDetails' => '',
                             'EmailAddress' => '',
                             'UpdatedDateUTC' => '/Date(1487614324277+0000)/',
-                            'HasAttachments' => JSON::PP::false,
+                            'HasAttachments' => JSON::XS::false,
                             'Addresses' => [
                                              {
                                                'Country' => '',
@@ -35,9 +37,9 @@ my $c = WebService::Xero::Contact->new(
                                              }
                                            ],
                             'ContactPersons' => [],
-                            'IsCustomer' => JSON::PP::false,
+                            'IsCustomer' => JSON::XS::true,
                             'Name' => 'Jane Scott',
-                            'HasValidationErrors' => JSON::PP::false,
+                            'HasValidationErrors' => JSON::XS::false,
                             'ContactGroups' => [],
                             'Phones' => [
                                           {
@@ -69,9 +71,6 @@ my $c = WebService::Xero::Contact->new(
                           
 );
 
-print $c->as_text( "\n", 1 );
-# print "\n-- When Updated = " . $c->{UpdatedDateUTC}->as_text();
-
-#my $p = WebService::Xero::DateTime->new( $c->{UpdatedDateUTC} );
-#print Dumper $c->{UpdatedDateUTC} ;
-#exit;
+#print $c->as_text( "\n", 1 );
+print "\n" . '-' x 40 . "\n";
+print $c->as_json();

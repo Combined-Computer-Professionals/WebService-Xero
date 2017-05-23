@@ -37,7 +37,7 @@ our @PARAMS = qw/ContactID ContactNumber ContactStatus AccountNumber Name FirstN
 Object to describe an Contact record as specified by Xero API and the associated DTD at 
 L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Contact.xsd>.
 
-Class to encapsulate Xero Contact data structure and handles some of the conversion for nested structures, dates and booleans to 
+Encapsulate Xero Contact data structure and handles some of the conversion for nested structures, dates and booleans to 
 assist in manipulating. 
 
 Also provide a few helper functions such as get_all_using_agent() which includes paging.

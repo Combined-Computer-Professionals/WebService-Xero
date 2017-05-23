@@ -169,29 +169,3 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 1; # End of WebService::Xero
 
 
-package WebService::Xero::DateTime;
-use DateTime;
-sub new 
-{
-    my ( $class, $xero_date_string ) = @_;
-    my $self = {
-      _utc => 0,
-    };
-    if ( $xero_date_string =~ /Date\((\d+)[^\d]/smg )
-    {
-        my $utc_str = $1;
-        $self->{_utc} = DateTime->from_epoch( epoch => $utc_str/1000 ) || die("critical failure creating date from $xero_date_string");
-
-        return bless $self, $class;
-    }
-    return undef; ## default if conditions aren't right
-    
-}
-
-sub as_datetime
-{
-    my ( $self ) = @_;
-    return $self->{_utc};
-
-}
-1; 

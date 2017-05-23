@@ -70,6 +70,20 @@ Download the latest stable source:
     cd WebService-Xero
 ```
 
+or Download the bleeding edge development version source:
+```sh
+    git clone https://github.com/pscott-au/CCP-Xero
+    cd CCP-Xero
+```
+
+Configure your API credentials:
+```sh
+    cp t/config/test_config.tpl ./t/config/test_config.ini
+    nano ./t/config/test_config.ini
+```
+
+
+
 Create the makefile
 
 ```sh
@@ -130,15 +144,22 @@ print Dumper $contact_struct; ## should contain an array of hashes containing co
 
 An example of a minimalistic Mojolicious framework Public Application implementation can be found at [github.com/pscott-au/mojolicious-xero-public-app-demo](https://github.com/pscott-au/mojolicious-xero-public-app-demo)
 
+There are also a couple of examples within the tests directory t and in the examples folder.
+
+
 See perldoc for details
 ````sh
 perldoc WebService::Xero
 perldoc WebService::Xero::Agent::PublicApplication
 perldoc WebService::Xero::Agent::PrivateApplication
+perldoc WebService::Xero::Contact
+perldoc WebService::Xero::Contacts_Container
 ````
 
-### To-do's
 
+
+### To-do's
+ - Simplify this README - TLDNR
  - Classes for all Xero Components ( Item, Contact, Invoice etc )
  - Working Public Application Example 
  - Partner Application Interface

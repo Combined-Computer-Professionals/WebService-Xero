@@ -24,7 +24,7 @@ sub TO_JSON
         AttentionTo  => $self->{AttentionTo},
         AddressLine2 => $self->{AddressLine2},
         PostalCode   => $self->{PostalCode},
-        AddressType  => $self->{AddressType},
+        AddressType  => $self->{AddressType},  ## POBOX | STREET | DELIVERY
         AddressLine4 => $self->{AddressLine4},
         Region       => $self->{Region},
     }

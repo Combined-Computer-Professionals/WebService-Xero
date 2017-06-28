@@ -1,5 +1,14 @@
 Revision history for WebService-Xero
 
+0.12    December, 2016 -  May 2017
+        Refinements to Data objects (Contact,Invoice,Item,Organization etc)
+        added https dependency and refined docs and tests
+        added new object classes
+        introduced Moose for some of the property classes ( Address etc )
+
+0.11    Decemner, 2016
+        Document cleanup, more tests, minor tweaks
+
 0.10    December, 2016
         Moved top level. CCP::Xero -> WebService::Xero
         performed 'percritic --harsh' review 

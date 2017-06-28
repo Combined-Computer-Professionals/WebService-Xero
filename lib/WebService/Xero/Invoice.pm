@@ -11,11 +11,11 @@ WebService::Xero::Invoice - encapsulates a Xero API Invoice record
 
 =head1 VERSION
 
-Version 0.10
+Version 0.12
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.12';
 
 our @PARAMS = qw/Date DueDate Status LineAmountTypes SubTotal TotalTax Total UpdatedDateUTC CurrencyCode Type InvoiceID InvoiceNumber AmountDue AmountPaid AmountCredited CurrencyRate/;
 
@@ -69,8 +69,6 @@ sub create_new_through_agent
   croak('need a valid agent parameter') unless (  ref( $params{agent} ) =~ /Agent/m  ); ## 
 
   my $new = WebService::Xero::Invoice->new( %params );
-
-  ## TODO: Create 
   return $new;
 }
 
@@ -191,7 +189,7 @@ L<https://developer.xero.com/documentation/api/contacts/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016 Peter Scott.
+Copyright 2016-2017 Peter Scott.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a

@@ -11,11 +11,11 @@ WebService::Xero::Item - Object encapulates Item data returned by API
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =cut
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 our @PARAMS = qw/Name ItemID Code Description UpdatedDateUTC IsTrackedAsInventory InventoryAssetAccountCode TotalCostPool QuantityOnHand IsSold IsPurchased/;
 
@@ -192,7 +192,7 @@ L<https://developer.xero.com/documentation/api/contacts/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016 Peter Scott.
+Copyright 2016-2017 Peter Scott.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a

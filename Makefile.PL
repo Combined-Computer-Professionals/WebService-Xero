@@ -10,7 +10,7 @@ WriteMakefile(
     ABSTRACT_FROM    => 'lib/WebService/Xero.pm',
     LICENSE          => 'artistic_2',
     PL_FILES         => {},
-    MIN_PERL_VERSION => 5.006,
+    MIN_PERL_VERSION => 5.012,
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
@@ -27,10 +27,13 @@ WriteMakefile(
         'Digest::MD5'         => 0,
         'URI::Encode'         => 0,
         'HTTP::Request'       => 0,
-        'JSON'                => 0, ## not sure if need to include JSON::PP or JSON::PP here or build?
+        'JSON::XS'                => 0, ## not sure if need to include JSON::PP or JSON::PP here or build?
         'Data::Random'        => 0,
         'Net::OAuth'          => 0,
         'Mozilla::CA'         => 0,
+        'DateTime'            => 0,
+        'LWP::Protocol::https' => 0,
+        'Moose'               => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES => 'WebService-Xero-*' },

@@ -3,17 +3,39 @@
 
 [![Build Status](https://travis-ci.org/pscott-au/CCP-Xero.svg?branch=master)](https://travis-ci.org/pscott-au/CCP-Xero)
 [![Coverage Status](https://coveralls.io/repos/github/pscott-au/CCP-Xero/badge.svg?branch=master)](https://coveralls.io/github/pscott-au/CCP-Xero?branch=master)
+[![CPAN Version](https://img.shields.io/cpan/v/WebService-Xero.svg)](http://search.cpan.org/~localshop/WebService-Xero/lib/WebService/Xero.pm)
 [![Join the chat at https://gitter.im/CCP-AU/](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/CCP-AU?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badgeP-AU/Lobby?source=orgpage)
 
 Perl CPAN style module to simplify integration with [Xero API Applications](https://developer.xero.com)
 
 Inspired by the Xero endorsed Ruby API Library [Xeroizer] 
-and the CPAN [Net::Xero](http://search.cpan.org/~elliott/Net-Xero-0.43/lib/Net/Xero.pm) module, this Perl module aims to simplify integration with Xero API Applications
+and the CPAN [Net::Xero](http://search.cpan.org/~elliott/Net-Xero/lib/Net/Xero.pm) module, this Perl module aims to simplify integration with Xero API Applications
 points for Public, Private and in the future Partner application services.
 WebService::Xero modules primarily encapsulate the [OAuth (v1.0a) access control protocol as described by Cubrid](http://www.cubrid.org/blog/dev-platform/dancing-with-oauth-understanding-how-authorization-works/) .
-The module is in the CCP namespace because it was extracted from a larger application.
 
 
+# Install from CPAN
+
+This package is now available through [CPAN](http://search.cpan.org/~localshop/WebService-Xero/)
+
+````sh
+
+  perl -MCPAN -e 'install WebService::Xero'
+
+````
+
+## XML-SAX Dependency
+
+Because of dependencies on native XML libraries by some of the modules dependencies you may need to install native expat / xml libraries.
+
+On AWS Linux you may need to install perl-XML-SAX using the package manager ````sudo yum install perl-XML-SAX perl-XML-Parser````
+
+For other platforms see the [GitHub Wiki](https://github.com/pscott-au/CCP-Xero/wiki/Installation-Dependency-Issues)
+
+
+
+
+# Building from Source
 
 ## Prerequisites 
 
@@ -25,11 +47,13 @@ The module is in the CCP namespace because it was extracted from a larger applic
 sudo apt-get install perl build-essential ## eg debian package install
 ````
 
-## Getting Started
 
-This module can now be installed through CPAN using 
 
-This Perl code is in the standard CPAN package format and can be installed using the usual approach:
+## Installing Manually
+
+
+This Perl code is in the standard CPAN package format and can be installed through CPAN or downloaded and installed manually either from [GitHub](https://github.com/Combined-Computer-Professionals/WebService-Xero) or CPAN:
+
 ```sh
   perl Makefile.PL
   make
@@ -39,12 +63,26 @@ This Perl code is in the standard CPAN package format and can be installed using
 
 ### Installing Step by Step
 
-Download the source:
+Download the latest stable source:
 
+```sh
+    git clone https://github.com/Combined-Computer-Professionals/WebService-Xero
+    cd WebService-Xero
+```
+
+or Download the bleeding edge development version source:
 ```sh
     git clone https://github.com/pscott-au/CCP-Xero
     cd CCP-Xero
 ```
+
+Configure your API credentials:
+```sh
+    cp t/config/test_config.tpl ./t/config/test_config.ini
+    nano ./t/config/test_config.ini
+```
+
+
 
 Create the makefile
 
@@ -64,10 +102,23 @@ NB: Crypt::OpenSSL::RSA from CPAN requires SSL devel libraries which
   apt-get install libssl-dev   ## for debian etc
   yum install openssl-devel    ## for RH,Centos, Ubuntu etc
 ```
+
+Set ENV vars if you require verbose testing.
+````sh
+export   RELEASE_TESTING=1
+export   AUTHOR_TESTING=1
+
+````
+NB: you can also copy the template config file in t/config/test_config.tpl to t/config/test_config.ini to use API credentials in your testing 
+
+
 Make,test and install the library
 ```sh
 make
 make test
+## or for verbose test
+make test TEST_VERBOSE=1
+
 make install
 ```
 
@@ -83,20 +134,32 @@ use Data::Dumper;
 
 my $xero = WebService::Xero::Agent::PrivateApplication->new( CONSUMER_KEY    => 'YOUR_OAUTH_CONSUMER_KEY', 
                                                     CONSUMER_SECRET => 'YOUR_OAUTH_CONSUMER_SECRET', 
-                                                    KEYFILE         => "/path/to/privatekey.pem" 
+                                                    PRIVATE_KEY      => '-----BEGIN RSA PRIVATE KEY-----.....etc'
                                                           );
-## AND THEN ACCESS THE API POINTS
+## AND THEN ACCESS THE XERO API POINTS
+
 my $contact_struct = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts' );
 print Dumper $contact_struct; ## should contain an array of hashes containing contact data.
 ````
 
+An example of a minimalistic Mojolicious framework Public Application implementation can be found at [github.com/pscott-au/mojolicious-xero-public-app-demo](https://github.com/pscott-au/mojolicious-xero-public-app-demo)
+
+There are also a couple of examples within the tests directory t and in the examples folder.
+
+
 See perldoc for details
 ````sh
 perldoc WebService::Xero
+perldoc WebService::Xero::Agent::PublicApplication
+perldoc WebService::Xero::Agent::PrivateApplication
+perldoc WebService::Xero::Contact
+perldoc WebService::Xero::Contacts_Container
 ````
 
-### Todos
 
+
+### To-do's
+ - Simplify this README - TLDNR
  - Classes for all Xero Components ( Item, Contact, Invoice etc )
  - Working Public Application Example 
  - Partner Application Interface
@@ -104,7 +167,7 @@ perldoc WebService::Xero
 LICENSE AND COPYRIGHT
 ----
 
-Copyright 2016 Peter Scott.
+Copyright 2016-2017 Peter Scott.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a
@@ -143,12 +206,17 @@ CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-### Development Support
+### Contributors / Support
 
-Want to contribute? Great, get in touch!
+Want to contribute? Great, [get in touch!](mailto:peter@computerpros.com.au)
 Need some help with your setup - will try to help where I can.
 
+Many thanks to the following for help and suggestions:
 
-[Xeroizer]: <https://github.com/waynerobinson/xeroizer/README.md>
+  * Neil Grooby from [Xero Developer Team](https://developer.xero.com/)
+  * Steve Bertrand for advice on [Perlmonks](https://perlmonks.org) 
+
+[Xeroizer]: <https://github.com/waynerobinson/xeroizer/>
+[Developer Blog]: <https://xero.computerpros.net.au>
   
 

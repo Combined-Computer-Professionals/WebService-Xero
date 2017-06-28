@@ -27,11 +27,11 @@ WebService::Xero::Agent - Base Class for API Connections
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =cut
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 
 =head1 SYNOPSIS
@@ -88,6 +88,9 @@ sub _validate_agent
   my ( $self  ) = @_;
   return $self->_error('base class not meant for instantiation');
 }
+
+
+
 
 
 
@@ -151,6 +154,7 @@ sub get_all_customer_invoices_from_xero
 
     The response is requested in JSON format which is then processed into a Perl structure that
     is returned to the caller.
+    TODO: handle http response codes as per https://developer.xero.com/documentation/api/http-response-codes
 
 
 =cut 
@@ -254,7 +258,8 @@ sub _error
 {
   my ( $self, $msg ) = @_;
   carp( $self->{_status} = $msg);
-  return $self->{_ERROR_VAL}; ##undef
+  #$self->{_ERROR_VAL}; ##undef
+  return undef;
 }
 
 
@@ -334,7 +339,7 @@ L<http://search.cpan.org/dist/CCP-Xero/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016 Peter Scott.
+Copyright 2016-2017 Peter Scott.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a

@@ -14,6 +14,11 @@ points for Public, Private and in the future Partner application services.
 WebService::Xero modules primarily encapsulate the [OAuth (v1.0a) access control protocol as described by Cubrid](http://www.cubrid.org/blog/dev-platform/dancing-with-oauth-understanding-how-authorization-works/) .
 
 
+# Current Work in Progress
+
+* Support for PUT REST commands with examples such for example to create new accounts as per [Xero Docs](https://developer.xero.com/documentation/api/accounts#PUT)
+
+
 # Install from CPAN
 
 This package is now available through [CPAN](http://search.cpan.org/~localshop/WebService-Xero/)

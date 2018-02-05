@@ -35,15 +35,8 @@ my $xero = WebService::Xero::Agent::PrivateApplication->new(
                                                           PRIVATE_KEY     => $pk_text,
                                                           );
 
-#my $response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Accounts');
-#print Dumper $response;
-#exit;
-
 
 my $account_def_xml = new_account_xml();
-
-
- #my $response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Accounts' , 'PUT', $account_def_xml ) || die( 'Request failed: ' . $xero->{_status} );
  
  my $response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Accounts' , 'PUT', $account_def_xml ) || die( 'Request failed: ' . $xero->{_status} );
  
@@ -51,20 +44,6 @@ my $account_def_xml = new_account_xml();
 
 sub new_account_xml
 {
-
-=pod
-                                'BankAccountType' => '',
-                            'UpdatedDateUTC' => '/Date(1445760428120+0000)/',
-                            'Status' => 'ACTIVE',
-                            'ReportingCode' => 'REV',
-                            'Description' => 'Includes deliveries and hire',
-                            'Type' => 'SALES',
-                            'ReportingCodeName' => 'Revenue',
-                            'ShowInExpenseClaims' => $VAR1->{'Accounts'}[0]{'EnablePaymentsToAccount'},
-                            'Name' => 'iLoad Van Service',
-                            'Class' => 'REVENUE',
-                            'TaxType' => 'OUTPUT',
-=cut
   return q{<Account>
   <Code>205</Code>
   <Name>TEST SALES 2</Name>
@@ -72,6 +51,5 @@ sub new_account_xml
   <TaxType>OUTPUT</TaxType>
 </Account>};
 
-
-} ## END SUB
+} 
 

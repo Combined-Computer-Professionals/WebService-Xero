@@ -9,6 +9,7 @@ use JSON::XS;
 use JSON qw/encode_json/;
 use Data::Dumper;
 
+## NB This is a work in progress - it creates an object instance but does not yet submit it to Xero to create 
 
 
 
@@ -17,7 +18,7 @@ my $c = WebService::Xero::Contact->new(
                             'IsSupplier' => JSON::XS::false,
                             'ContactStatus' => 'ACTIVE',
                             'BankAccountDetails' => '',
-                            'EmailAddress' => '',
+                            'EmailAddress' => 'jane@computerpros.com.au',
                             'UpdatedDateUTC' => '/Date(1487614324277+0000)/',
                             'HasAttachments' => JSON::XS::false,
                             'Addresses' => [

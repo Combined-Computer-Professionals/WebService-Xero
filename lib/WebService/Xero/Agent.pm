@@ -19,7 +19,7 @@ use Net::OAuth 0.20;
 $Net::OAuth::PROTOCOL_VERSION = Net::OAuth::PROTOCOL_VERSION_1_0A;
 
 use WebService::Xero::Organisation;
-
+use XML::Simple;
 
 =head1 NAME
 
@@ -159,6 +159,53 @@ sub get_all_customer_invoices_from_xero
 
 =cut 
 
+
+sub do_xero_put_call
+{
+  my ( $self, $uri, $method, $xml ) = @_;
+
+  my $encryption = 'RSA-SHA1';
+  $encryption = 'HMAC-SHA1' if (defined $self->{TOKEN} and $self->{TOKEN} ne $self->{CONSUMER_KEY} ); 
+  $self->{TOKEN}        = $self->{CONSUMER_KEY}    unless  $self->{TOKEN};
+  $self->{TOKEN_SECRET} = $self->{CONSUMER_SECRET} unless  $self->{TOKEN_SECRET};
+
+my $access = Net::OAuth->request("protected resource")->new(
+    consumer_key     => $self->{CONSUMER_KEY},
+    consumer_secret  => $self->{CONSUMER_SECRET},
+    token            => $self->{TOKEN},
+    token_secret     => $self->{TOKEN_SECRET},
+    request_url      => $uri,
+    request_method   => $method,
+    signature_method => $encryption,
+    timestamp        => time,
+    nonce => 'ccp' . md5_base64( join('', rand_chars(size => 8, set => 'alphanumeric')) . time ), 
+);
+  if ( $self->{TOKEN} eq $self->{CONSUMER_KEY} ) 
+  {
+    $access->sign( $self->{pko} );
+  }
+  else
+  {
+    $access->sign(); ## HMAC-SHA1 is self signed
+  }
+my $request = HTTP::Request->new( 'PUT', $access->to_url );
+$request->content( $xml );
+my $res = $self->{ua}->request( $request );
+if ($res->is_success) {
+  print $res->content;
+  my $ref = XMLin( $res->content );
+  return $ref;
+} else {
+  return $self->api_error($res->content);
+}
+
+
+
+}
+
+#######
+
+
 sub do_xero_api_call
 {
   my ( $self, $uri, $method, $xml ) = @_;
@@ -182,8 +229,8 @@ sub do_xero_api_call
     nonce => 'ccp' . md5_base64( join('', rand_chars(size => 8, set => 'alphanumeric')) . time ), 
   );
   $opts{verifier} = $self->{verifier} if defined $self->{verifier};
-  $opts{extra_params} = { xml => $xml}  if ( $method eq 'POST' and defined $xml );
-
+  $opts{extra_params} = { xml => $xml}  if ( $method =~ 'POST' and defined $xml );
+  $opts{extra_params} = { xml => $xml}  if ( $method =~ 'PUT' and defined $xml );
 
   my $access = Net::OAuth->request("protected resource")->new( %opts );
   
@@ -205,11 +252,13 @@ sub do_xero_api_call
   }
   elsif ( $method eq 'PUT' )
   {
-    $req = HTTP::Request::Common::PUT( $uri );
-    $req->header(  'Content-Type' => 'application/xml');
+    return $self->do_xero_put_call( $uri, $method, $xml );
+    #$req = HTTP::Request::Common::PUT( $uri );
+    #$req = HTTP::Request->new( 'PUT', $access->to_url );
+    #$req->header(  'Content-Type' => 'application/xml; charset=utf-8');
     #$req->header( 'Accept' => 'application/json');
-    $req->header(Authorization => $access->to_authorization_header);
-    $req->content( $access->to_post_body ) if defined $xml;
+    #$req->header(Authorization => $access->to_authorization_header);
+    #$req->content( $xml ) if defined $xml;
   }
   elsif ( $method eq 'GET' )
   {

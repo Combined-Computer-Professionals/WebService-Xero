@@ -35,27 +35,43 @@ my $xero = WebService::Xero::Agent::PrivateApplication->new(
                                                           PRIVATE_KEY     => $pk_text,
                                                           );
 
+#my $response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Accounts');
+#print Dumper $response;
+#exit;
+
+
 my $account_def_xml = new_account_xml();
 
 
- my $response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Accounts' , 'POST', $account_def_xml ) || die( 'Request failed: ' . $xero->{_status} );
+ #my $response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Accounts' , 'PUT', $account_def_xml ) || die( 'Request failed: ' . $xero->{_status} );
+ 
+ my $response = $xero->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Accounts' , 'PUT', $account_def_xml ) || die( 'Request failed: ' . $xero->{_status} );
+ 
  print Dumper $response;
 
 sub new_account_xml
 {
-  return q{
-<Account>
-  <Code>202</Code>
-  <Name>Sales - clearance lines</Name>
-  <Type>SALES</Type>
-</Account>
-  };
 
+=pod
+                                'BankAccountType' => '',
+                            'UpdatedDateUTC' => '/Date(1445760428120+0000)/',
+                            'Status' => 'ACTIVE',
+                            'ReportingCode' => 'REV',
+                            'Description' => 'Includes deliveries and hire',
+                            'Type' => 'SALES',
+                            'ReportingCodeName' => 'Revenue',
+                            'ShowInExpenseClaims' => $VAR1->{'Accounts'}[0]{'EnablePaymentsToAccount'},
+                            'Name' => 'iLoad Van Service',
+                            'Class' => 'REVENUE',
+                            'TaxType' => 'OUTPUT',
+=cut
   return q{<Account>
-  <Code>204</Code>
-  <Name>TEST SALES</Name>
+  <Code>205</Code>
+  <Name>TEST SALES 2</Name>
   <Type>SALES</Type>
-  <TaxType>CAPEXINPUT</TaxType>
+  <TaxType>OUTPUT</TaxType>
 </Account>};
-}
+
+
+} ## END SUB
 

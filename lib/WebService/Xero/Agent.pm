@@ -147,7 +147,7 @@ sub get_all_customer_invoices_from_xero
   INPUT PARAMETERS AS A LIST ( NOT NAMED )
 
 * $uri (required)    - the API endpoint URI ( eg 'https://api.xero.com/api.xro/2.0/Contacts/')
-* $method (optional) - 'POST' or 'GET' .. PUT not currently supported
+* $method (optional) - 'POST' or 'GET' .. PUT is experimental
 * $xml (optional)    - the payload for POST updates as XML
 
   RETURNS
@@ -203,6 +203,14 @@ sub do_xero_api_call
     $req->header( 'Accept' => 'application/json');
     $req->content( $access->to_post_body ) if defined $xml;
   }
+  elsif ( $method eq 'PUT' )
+  {
+    $req = HTTP::Request::Common::PUT( $uri );
+    $req->header(  'Content-Type' => 'application/xml');
+    #$req->header( 'Accept' => 'application/json');
+    $req->header(Authorization => $access->to_authorization_header);
+    $req->content( $access->to_post_body ) if defined $xml;
+  }
   elsif ( $method eq 'GET' )
   {
     $req->header(Authorization => $access->to_authorization_header);
@@ -210,7 +218,7 @@ sub do_xero_api_call
   } 
   else 
   {
-    return $self->_error('ONLY POST AND GET CURRENT SUPPORTED BY WebService::Xero Library');
+    return $self->_error('ONLY POST,PUT AND GET CURRENT SUPPORTED BY WebService::Xero Library');
   }
   my $res = $self->{ua}->request($req);
   if ($res->is_success)

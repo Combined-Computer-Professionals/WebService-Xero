@@ -211,6 +211,13 @@ sub do_xero_api_call
   my ( $self, $uri, $method, $xml ) = @_;
   $method = 'GET' unless $method;
 
+  my $wantsPdf = 0;
+  if ( $method =~ /pdf$/ )
+  {
+    $wantsPdf = 1;
+    $method =~ s/pdf$//;
+  }
+
   my $data = undef;
   my $encryption = 'RSA-SHA1';
   $encryption = 'HMAC-SHA1' if (defined $self->{TOKEN} and $self->{TOKEN} ne $self->{CONSUMER_KEY} ); 
@@ -263,7 +270,13 @@ sub do_xero_api_call
   elsif ( $method eq 'GET' )
   {
     $req->header(Authorization => $access->to_authorization_header);
-    $req->header( 'Accept' => 'application/json');
+    if ( $wantsPdf ) 
+    {
+      $req->header( 'Accept' => 'application/pdf');
+    } else 
+    {
+      $req->header( 'Accept' => 'application/json');
+    }
   } 
   else 
   {
@@ -273,7 +286,13 @@ sub do_xero_api_call
   if ($res->is_success)
   {
     $self->{status} = 'GOT RESPONSE FROM XERO API CALL';
-    $data = from_json($res->content) || return $self->api_error( $res->content );  
+    if ( $wantsPdf ) 
+    {
+      $data = $res->content || return $self->api_error( $res->content );  
+    } else 
+    {
+        $data = from_json($res->content) || return $self->api_error( $res->content );  
+    }
   } 
   else 
   {

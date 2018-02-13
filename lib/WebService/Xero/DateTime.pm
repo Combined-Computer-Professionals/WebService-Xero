@@ -30,16 +30,28 @@ A helper class for date handling.
 
 our $VERSION = '0.12';
 
+
+#    if ( $dates->{$k} =~ /\/Date\(([\d|\+|\-]+)\)\//mg )
+#    {
+#        my $ms_full = $1;
+#        #print "-- $ms_full\n";
+#        if ($ms_full =~ /^(\d+)([+|-]\d{4})$/mg)
+#        {
+#            my $dt = DateTime->from_epoch( epoch => $1/1000, time_zone=>$2 );
+#            print $dt . "\n";
+#        }
+#    }
+
 sub new 
 {
     my ( $class, $xero_date_string ) = @_;
     my $self = {
       _utc => 0,
     };
-    if ( $xero_date_string =~ /Date\((\d+)[^\d]/smg )
+    if ( $xero_date_string =~  /\/{0,1}Date\(([\d]+)[\+|\-]{0,1}(\d{4})\)\/{0,1}$/mg )
     {
         my $utc_str = $1;
-        $self->{_utc} = DateTime->from_epoch( epoch => $utc_str/1000 ) || die("critical failure creating date from $xero_date_string");
+        $self->{_utc} = DateTime->from_epoch( epoch => $utc_str/1000, time_zone=>$2 ) || die("critical failure creating date from $xero_date_string");
         
 
         return bless $self, $class;
@@ -52,6 +64,27 @@ sub new
     return undef; ## default if conditions aren't right
     
 }
+
+
+=head2 xero_date_text_as_date_object()
+
+  returns DateTime object
+
+=cut
+
+sub xero_date_text_as_date_object
+{
+    my ( $self, $xero_date_string ) = @_;
+
+    my $dt = undef;
+    if ( $xero_date_string =~  /\/{0,1}Date\(([\d]+)[\+|\-]{0,1}(\d{4})\)\/{0,1}$/mg )
+    {
+        my $utc_str = $1; $tz = $2;
+        $dt = DateTime->from_epoch( epoch => $utc_str/1000, time_zone=>$tz ) || return undef;
+    }    
+    return $dt;
+}
+
 
 
 =head2 as_datetime()

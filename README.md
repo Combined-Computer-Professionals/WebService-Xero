@@ -14,9 +14,16 @@ points for Public, Private and in the future Partner application services.
 WebService::Xero modules primarily encapsulate the [OAuth (v1.0a) access control protocol as described by Cubrid](http://www.cubrid.org/blog/dev-platform/dancing-with-oauth-understanding-how-authorization-works/) .
 
 
-# Current Work in Progress
+# Active Development Version 0.12 ahead of cPanel Version 0.11
 
 * Support for PUT REST commands with examples such for example to create new accounts as per [Xero Docs](https://developer.xero.com/documentation/api/accounts#PUT)
+* Supoprt for PDF handling
+* More robust coverage of common usage in examples
+* Reworking Date handling starting with Invoice class
+* Refine overall design and address whether object instances are bound to Xero DB or whether can be created from data stand-alone
+* Improve and expand exampels with actual useful snippets
+* Improve documentation and include instructions for direct API access without needing the Xero Object classes.
+
 
 
 # Install from CPAN

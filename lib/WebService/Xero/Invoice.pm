@@ -33,14 +33,32 @@ Perhaps a little code snippet.
 
     use  WebService::Xero::Invoice;
     my $foo =  WebService::Xero::Invoice->new();
-    ...
+
+         my $invoices =  WebService::Xero::Invoice->new_from_api_data( $xero->do_xero_api_call( "https://api.xero.com/api.xro/2.0/Invoices?ContactIDs=$contact_id") );
+         print Dumper $invoices; # an array of invoice objects or a single invoice
+         foreach my $inv ( @$invoices ) { print $inv->as_text() . "\n" . '-' x 40 . "\n";}
+
+=head1 TODO
+
+Need to add in some kind of mechaism to pull invoice(s) directly from Server instead of doing in external API request.
+NB - consider paging approach 
+Paging invoices (recommended)
+To utilise paging, append a page parameter to the URL e.g. ?page=1. If there are 100 records in the response you will need to check if there is any more data by fetching the next page e.g ?page=2 and continuing this process until no more results are returned. 
+By using paging all the line item details for each invoice are returned which may avoid the need to retrieve each individual invoice.
+
+NB - currently a work in progress as some uncertainty as to whether to create an object instance then push into Xero or only allow instances that are already in Xero.
 
 
 =head1 METHODS
 
 =head2 new()
 
+  Hash param values for these can be passed in:  Date DueDate Status LineAmountTypes SubTotal TotalTax Total UpdatedDateUTC CurrencyCode Type InvoiceID InvoiceNumber AmountDue AmountPaid AmountCredited CurrencyRate
+ 
+  WebService::Xero::Invoice->new( InvoiceID=> 'INV-12345' );
 =cut
+
+#  NB - fails unless define minimally InvoiceID
 
 sub new 
 {
@@ -52,7 +70,7 @@ sub new
       API_URL => 'https://api.xero.com/api.xro/2.0/Invoices'
     }, $class;
     foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
-
+    #return $self->_error("Unable to create instance of $class") unless (defined $self->{InvoiceNumber} and $self->{InvoiceNumber} ne ''); ## nb didn't use invvoiceID as expect to need to create an object then use that to create backend record.
     return $self; #->_validate_agent(); ## derived classes will validate this
 
 }
@@ -116,7 +134,25 @@ sub new_from_api_data
 sub as_text 
 {
     my ( $self ) = @_;
-    return "Invoice:\n" . join("\n", map { "$_ : $self->{$_}" } @PARAMS);
+    
+    # return "Invoice:\n" . join("\n", map { "$_ : $self->{$_}" } @PARAMS);
+    # replaced original map with code to handle date field formatting 
+
+    my $txt = '';
+
+    foreach my $field ( @PARAMS )
+    {
+      if ( $field eq 'Date' or $field eq 'UpdatedDateUTC' or $field eq  'DueDate')
+      {
+        $txt .= "$field\t" . WebService::Xero::DateTime->xero_date_text_as_date_object( $self->{$field} ) . "\n";
+
+      }
+      else ## not a date field
+      {
+        $txt .= "$field\t$self->{$field}\n";
+      }
+    }
+    return $txt;
 }
 
 
@@ -133,12 +169,19 @@ sub as_text
 sub get_pdf
 {
   my ( $self ) = @_;
-  return $self->error('Not implemented');
+  #$self->do_xero_api_call
+  return $self->_error('Not implemented');
   ## TODO: confirm that we have a populated instance and id and if so - request as PDF
 }
 
 
-
+sub _error 
+{
+  my ( $self, $msg ) = @_;
+  carp( $self->{_status} = $msg);
+  #$self->{_ERROR_VAL}; ##undef
+  return undef;
+}
 
 =head1 AUTHOR
 

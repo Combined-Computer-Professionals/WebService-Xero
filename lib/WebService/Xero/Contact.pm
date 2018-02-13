@@ -52,7 +52,7 @@ Also provide a few helper functions such as get_all_using_agent() which includes
     my $agent            = WebService::Xero::Agent::PrivateApplication->new( ... etc 
     my $contact_response = $agent->do_xero_api_call( 'https://api.xero.com/api.xro/2.0/Contacts/297c2dc5-cc47-4afd-8ec8-74990b8761e9' ) || die( 'check the agent for error message' );
 
-    my $contact =  WebService::Xero::Contact->new( $contact_response->{Contacts}[0] );
+    my $contact =  WebService::Xero::Contact->new( %{$contact_response->{Contacts}[0]} );
     print $contact->as_text();
 
 =head2 Example 2
@@ -263,7 +263,7 @@ sub as_text
         }
         if ( $count == 0 )
         {
-          $ret .= "EMPTY LIST of $prop" . $sep;
+          $ret .= "EMPTY LIST of $prop$sep";
 
         }
         else 

@@ -107,6 +107,12 @@ BEGIN {
     #is( ref($contact_obj), 'WebService::Xero::Contact', 'created WebService::Xero::Contact object is the right type' );
     #like( $contact_obj->as_text(), qr/Contact/, 'WebService::Xero::Contact->as_text()' );
 
+
+    use_ok( 'WebService::Xero::DateTime' ) || print "Bail out!\n";
+    #ok( my $date_obj = WebService::Xero::DateTime->new(), 'WebService::Xero::DateTime->new()');
+    #is( ref($date_obj), 'WebService::Xero::DateTime', 'created WebService::Xero::DateTime object is the right type' );
+    is( WebService::Xero::DateTime->xero_date_text_as_date_object(q{/Date(1506470400000+0000)/}), '2017-09-27T00:00:00','method xero_date_text_as_date_object() ok' )
+
 }
 
 done_testing();

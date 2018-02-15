@@ -5,6 +5,7 @@ use strict;
 use warnings;
 use Carp;
 use Data::Dumper;
+use WebService::Xero::DateTime;
 =head1 NAME
 
 WebService::Xero::Invoice - encapsulates a Xero API Invoice record
@@ -67,9 +68,30 @@ sub new
     my $self = bless 
     {
       debug => $params{debug},
-      API_URL => 'https://api.xero.com/api.xro/2.0/Invoices'
+      API_URL => 'https://api.xero.com/api.xro/2.0/Invoices',
+      LineItems => []
     }, $class;
+
     foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
+
+    ## create array of line items
+    foreach my $line_item ( @{ $params{LineItems} } )
+    {
+      push @{$self->{LineItems}}, {
+                                               'Quantity' => $line_item->{Quantity} || 0,
+                                               'TaxAmount' => $line_item->{TaxAmount} || '',
+                                               'UnitAmount' => $line_item->{UnitAmount} || '',
+                                               #'Tracking' => [],  ## NNOT IMPLEMENTED YET
+                                               'TaxType' => $line_item->{TaxType} || '',
+                                               'LineAmount' => $line_item->{LineAmount} || '',
+                                               'ItemCode' => $line_item->{ItemCode} || '',
+                                               'AccountCode' => $line_item->{AccountCode} || '',
+                                               'Description' => $line_item->{Description} || '',
+                                               'LineItemID' => $line_item->{LineItemID} || ''
+      };
+
+    }
+
     #return $self->_error("Unable to create instance of $class") unless (defined $self->{InvoiceNumber} and $self->{InvoiceNumber} ne ''); ## nb didn't use invvoiceID as expect to need to create an object then use that to create backend record.
     return $self; #->_validate_agent(); ## derived classes will validate this
 
@@ -128,6 +150,8 @@ sub new_from_api_data
 
 =head2 as_text()
 
+  returns the object data as a roughly formatted string.
+
 =cut
 
 
@@ -149,8 +173,22 @@ sub as_text
       }
       else ## not a date field
       {
-        $txt .= "$field\t$self->{$field}\n";
+        $txt .= "$field:\t$self->{$field}\n";
       }
+    }
+
+    foreach my $li ( @{$self->{LineItems}} )
+    {
+      $txt .= qq{ LineItemID:\t$li->{LineItemID}
+ Quantity:\t$li->{Quantity}
+ Description:\t$li->{Description}
+ ItemCode:\t$li->{ItemCode}
+ UnitAmount:\t$li->{UnitAmount}
+ TaxType:\t$li->{TaxType}
+ AccountCode:\t$li->{AccountCode}
+ TaxAmount:\t$li->{TaxAmount}
+ LineAmount:\t$li->{LineAmount}
+};
     }
     return $txt;
 }

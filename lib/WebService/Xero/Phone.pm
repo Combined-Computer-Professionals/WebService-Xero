@@ -13,12 +13,25 @@ has 'PhoneCountryCode' => (is => 'rw');
 sub TO_JSON  ## NB - this sub is required by JSON in parent Contact Class to use convert_blessed
 {
     my ( $self ) = @_;
-    return  {  'PhoneNumber'   => $self->{PhoneNumber},
-               'PhoneType'     => $self->{PhoneType},  ## DEFAULT FAX  MOBILE DDI  ( maxLength 50 )
-               'PhoneAreaCode'     => $self->{PhoneAreaCode}, ## maxlength 10
+    return  {  'PhoneNumber'          => $self->{PhoneNumber},
+               'PhoneType'            => $self->{PhoneType},        ## DEFAULT FAX  MOBILE DDI  ( maxLength 50 )
+               'PhoneAreaCode'        => $self->{PhoneAreaCode},    ## maxlength 10
                'PhoneCountryCode'     => $self->{PhoneCountryCode}, ## maxlength 20
-               'ValidationErrors' => $self->{ValidationErrors}
+               'ValidationErrors'     => $self->{ValidationErrors}
                # 'Warnings'
             };
+}
+
+
+=head2 as_text()
+
+  returns the object data as a roughly formatted string.
+
+=cut
+
+sub as_text
+{
+     my ( $self ) = @_;
+     return "$self->{PhoneType} $self->{PhoneCountryCode} $self->{PhoneAreaCode} $self->{PhoneNumber} \n";
 }
 1;

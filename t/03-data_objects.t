@@ -96,7 +96,7 @@ BEGIN {
     use_ok( 'WebService::Xero::Invoice' ) || print "Bail out!\n";
     ok( my $inv_obj = WebService::Xero::Invoice->new(), 'WebService::Xero::Invoice->new()');
     is( ref($inv_obj), 'WebService::Xero::Invoice', 'created WebService::Invoice::Organisation object is the right type' );
-    like( $inv_obj->as_text(), qr/Invoice:/, 'WebService::Xero::Invoice->as_text()' );
+    like( $inv_obj->as_text(), qr/InvoiceID/, 'WebService::Xero::Invoice->as_text()' );
     ok( $inv_obj->new_from_api_data(), 'WebService::Xero::Invoice->new_from_api_data()');
     ok( $inv_obj->new_from_api_data(), 'WebService::Xero::Invoice->new_from_api_data()' );
 

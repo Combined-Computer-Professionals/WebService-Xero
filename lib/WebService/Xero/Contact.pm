@@ -268,8 +268,23 @@ sub as_text
         }
         else 
         {
-          $item_class = "$prop as hashes" if $item_class eq 'HASH';
-          $ret .= "$count Records ($item_class)" . $sep;
+          if ($item_class eq 'HASH')
+          {
+            $item_class = "$prop as hashes" ;
+          }
+          elsif ( $item_class eq 'WebService::Xero::Phone')
+          {
+            foreach my $ph (@{$self->{$prop}} )
+            {
+              $ret .= $ph->as_text();
+            }
+
+          }
+          else 
+          {
+            $ret .= "$count Records ($item_class)" . $sep;
+          }
+          
         }
       }
       else

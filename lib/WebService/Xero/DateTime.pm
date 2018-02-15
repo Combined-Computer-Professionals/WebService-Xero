@@ -30,7 +30,8 @@ A helper class for date handling.
 
 our $VERSION = '0.12';
 
-
+use Exporter;
+@EXPORT = qw/xero_date_text_as_date_object/;
 #    if ( $dates->{$k} =~ /\/Date\(([\d|\+|\-]+)\)\//mg )
 #    {
 #        my $ms_full = $1;

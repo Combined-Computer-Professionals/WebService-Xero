@@ -89,7 +89,7 @@ BEGIN {
     use_ok( 'WebService::Xero::Item' ) || print "Bail out!\n";
     ok( my $item_obj = WebService::Xero::Item->new(), 'WebService::Xero::Item->new()');
     is( ref($item_obj), 'WebService::Xero::Item', 'created WebService::Xero::Organisation object is the right type' );
-    like( $item_obj->as_text(), qr/Item:/, 'WebService::Xero::Item->as_text()' );
+    like( $item_obj->as_text(), qr/Item as_text/, 'WebService::Xero::Item->as_text()' );
     ok( $item_obj->new_from_api_data(), 'WebService::Xero::Item->new_from_api_data()' );
 
 

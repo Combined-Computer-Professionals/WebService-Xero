@@ -5,6 +5,8 @@ use strict;
 use warnings;
 use Carp;
 use Data::Dumper;
+use JSON;
+
 =head1 NAME
 
 WebService::Xero::Item - Object encapulates Item data returned by API
@@ -17,7 +19,7 @@ Version 0.12
 
 our $VERSION = '0.12';
 
-our @PARAMS = qw/Name ItemID Code Description UpdatedDateUTC IsTrackedAsInventory InventoryAssetAccountCode TotalCostPool QuantityOnHand IsSold IsPurchased/;
+our @PARAMS = qw/Name ItemID Code Description PurchaseDescription UpdatedDateUTC IsTrackedAsInventory InventoryAssetAccountCode TotalCostPool QuantityOnHand IsSold IsPurchased/;
 
 our @ARRAY_PARAMS = qw//; ## TODO: implement 
 
@@ -29,11 +31,48 @@ Object to describe an Item record as specified by Xero API and the associated DT
 L<https://github.com/XeroAPI/XeroAPI-Schemas/blob/master/src/main/resources/XeroSchemas/v2.00/Item.xsd>.
 
 Mostly a wrapper for Xero Item data structure.
+    use WebService::Xero::Agent::PrivateApplication;
+    use WebService::Xero::Item;
+    use JSON;
+    use JSON::XS;
 
+    my $xero_agent = WebService::Xero::Agent::PrivateApplication->new( 
+                                                            NAME            => $config->{PRIVATE_APPLICATION}{NAME},
+                                                            CONSUMER_KEY    => $config->{PRIVATE_APPLICATION}{CONSUMER_KEY}, 
+                                                            CONSUMER_SECRET => $config->{PRIVATE_APPLICATION}{CONSUMER_SECRET}, 
+                                                            # KEYFILE         => $config->{PRIVATE_APPLICATION}{KEYFILE},
+                                                            PRIVATE_KEY     => $pk_text,
+                                                            );
 
-    use  WebService::Xero::Item;
-    my $foo =  WebService::Xero::Item->new();
-    ...
+    my $TRUE  = bless( do{\(my $o = 1)}, 'JSON::PP::Boolean' );
+    my $FALSE = bless( do{\(my $o = 0)}, 'JSON::PP::Boolean' );
+
+        my $item =  WebService::Xero::Item->new(
+            
+                Name =>         'PRODUCT NAME',
+                #ItemID 
+                Code =>         'PRODUCT SKU',
+                #Description => 
+                #UpdatedDateUTC 
+                #IsTrackedAsInventory => 'true',
+                #InventoryAssetAccountCode
+                #TotalCostPool 
+                QuantityOnHand => 0,
+                IsSold => $TRUE,      #JSON::PP::true,
+                IsPurchased => $TRUE, #JSON::PP::true,
+                PurchaseDetails => { UnitPrice => 100.1001, AccountCode=> '310', },  # COGSAccountCode=> '', TaxType=> '', },
+                SalesDetails    => { UnitPrice => 200.40 AccountCode => "200", }, #  TaxType=> '',
+            
+        );
+        print $item->as_text();
+        print my $json = $item->as_json();
+
+        my $resp = $item->create_new_through_agent(  agent=> $xero_agent  );
+        if ( $resp->{Status} ne 'OK')
+        {
+            print Dumper $resp;
+            die('NOT OK?');
+        }
 
 
 
@@ -49,22 +88,32 @@ sub new
 
     my $self = bless 
     {
-      API_URL => 'https://api.xero.com/api.xro/2.0/Items',
-      debug => $params{debug},
+      API_URL         => 'https://api.xero.com/api.xro/2.0/Items',
+      debug           => $params{debug},
       PurchaseDetails => { UnitPrice => 0, AccountCode=> '', COGSAccountCode=> '', TaxType=> '', },
       SalesDetails    => { UnitPrice => 0, AccountCode => '', TaxType=> '', },
 
     }, $class;
-    foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  }
+    foreach my $key (@PARAMS) { $self->{$key} = defined $params{$key} ? $params{$key} : '';  } ## see fields as @PARAMS at top of this file as class scoped static
 
     $self->{PurchaseDetails}{UnitPrice}       =  $params{PurchaseDetails}{UnitPrice}       if defined $params{PurchaseDetails}{UnitPrice};
     $self->{PurchaseDetails}{COGSAccountCode} =  $params{PurchaseDetails}{COGSAccountCode} if defined $params{PurchaseDetails}{COGSAccountCode};
     $self->{PurchaseDetails}{AccountCode}     =  $params{PurchaseDetails}{AccountCode}     if defined $params{PurchaseDetails}{AccountCode};
     $self->{PurchaseDetails}{TaxType}         =  $params{PurchaseDetails}{TaxType}         if defined $params{PurchaseDetails}{TaxType};
 
-    $self->{PurchaseDetails}{UnitPrice}       =  $params{PurchaseDetails}{UnitPrice}       if defined $params{PurchaseDetails}{UnitPrice};
-    $self->{PurchaseDetails}{AccountCode}     =  $params{PurchaseDetails}{AccountCode}     if defined $params{PurchaseDetails}{AccountCode};
-    $self->{PurchaseDetails}{TaxType}         =  $params{PurchaseDetails}{TaxType}         if defined $params{PurchaseDetails}{TaxType};
+    $self->{SalesDetails}{UnitPrice}       =  $params{SalesDetails}{UnitPrice}       if defined $params{SalesDetails}{UnitPrice};
+    $self->{SalesDetails}{AccountCode}     =  $params{SalesDetails}{AccountCode}     if defined $params{SalesDetails}{AccountCode};
+    $self->{SalesDetails}{TaxType}         =  $params{SalesDetails}{TaxType}         if defined $params{SalesDetails}{TaxType};
+
+    ## VALIDATION
+    if ( length( $self->{Name} )>50 )
+    {
+      warn("Inventory Item Name must not be more than than 50 characters long - truncating") ;
+      $self->{Name} = substr( $self->{Name}, 0, 50);
+
+    }
+    
+
 
     return $self; #->_validate_agent(); ## derived classes will validate this
 
@@ -82,11 +131,12 @@ sub create_new_through_agent
   my ( $self, %params ) = @_;
 
   croak('need a valid agent parameter') unless (  ref( $params{agent} ) =~ /Agent/m  ); ## 
+  #croak('agent property of ') unless (  ref( $params{agent} ) =~ /Agent/m  ); ## 
+  #my $new = WebService::Xero::Item->new( %params );
 
-  my $new = WebService::Xero::Item->new( %params );
-
-  ## TODO: Create 
-  return $new;
+ my $xero_agent = $params{agent};
+ my $post_response = $xero_agent->do_xero_api_call( $self->{API_URL},'POST', $self->as_json() );
+ return $post_response;
 }
 
 
@@ -133,11 +183,39 @@ sub as_text
 {
     my ( $self ) = @_;
 
-    my $ret = "Item:\n" . join("\n", map { "$_ : $self->{$_}" } @PARAMS);
-    $ret .= " PurchaseDetails::UnitPrice  $self->{PurchaseDetails}{UnitPrice}\n";
-    $ret .= " PurchaseDetails::UnitPrice  $self->{PurchaseDetails}{UnitPrice}\n";
+    my $ret = "Item as_text():\n" . join("\n", map { "$_ : $self->{$_}" } @PARAMS);
+    $ret .= "\n PurchaseDetails::UnitPrice  $self->{PurchaseDetails}{UnitPrice}\n";
+     $ret .= " PurchaseDetails:: other fields (TODO)\n";
+    $ret .= " SalesDetails::UnitPrice  $self->{SalesDetails}{UnitPrice}\n";
+    $ret .= " SalesDetails:: other fields (TODO)\n";
 
   return $ret;
+
+}
+
+sub as_json
+{
+  my ( $self ) = @_;
+
+  my $json_object = {};
+    foreach my $key (@PARAMS) 
+    { 
+       if ( $self->{$key} ne '' )
+       {
+         $json_object->{$key} = $self->{$key};
+       }
+    } ## see fields as @PARAMS at top of this file as class scoped static
+
+    $json_object->{PurchaseDetails}{UnitPrice}       =  $self->{PurchaseDetails}{UnitPrice}       if $self->{PurchaseDetails}{UnitPrice} ne '';
+    $json_object->{PurchaseDetails}{COGSAccountCode} =  $self->{PurchaseDetails}{COGSAccountCode} if $self->{PurchaseDetails}{COGSAccountCode} ne '';
+    $json_object->{PurchaseDetails}{AccountCode}     =  $self->{PurchaseDetails}{AccountCode}     if $self->{PurchaseDetails}{AccountCode} ne '';
+    $json_object->{PurchaseDetails}{TaxType}         =  $self->{PurchaseDetails}{TaxType}         if $self->{PurchaseDetails}{TaxType} ne '';
+
+    $json_object->{SalesDetails}{UnitPrice}       =  $self->{SalesDetails}{UnitPrice}        if $self->{SalesDetails}{UnitPrice} ne '';
+    $json_object->{SalesDetails}{AccountCode}     =  $self->{SalesDetails}{AccountCode}     if $self->{SalesDetails}{AccountCode} ne '';
+    $json_object->{SalesDetails}{TaxType}         =  $self->{SalesDetails}{TaxType}         if $self->{SalesDetails}{TaxType} ne '';
+
+  return to_json( $json_object );
 
 }
 
@@ -179,12 +257,17 @@ You can also look for information at:
 
 =item * Xero Developer API Docs
 
-L<https://developer.xero.com/documentation/api/contacts/>
+L<https://developer.xero.com/documentation/api/items>
+
 
 
 =back
 
 =head1 TODO
+
+  - this is experimental 
+  - need to try to model the logic of conditional field dependencies ( eg for tracked inventory ) and
+    enforce integrity checks.
 
 
 =head1 ACKNOWLEDGEMENTS
@@ -192,7 +275,7 @@ L<https://developer.xero.com/documentation/api/contacts/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016-2017 Peter Scott.
+Copyright 2016-2018 Peter Scott.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a

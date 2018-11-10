@@ -17,11 +17,11 @@ WebService::Xero::Contact - encapsulates a Xero API Contact record
 
 =head1 VERSION
 
-Version 0.12
+Version 0.13
 
 =cut
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 our @PARAMS = qw/ContactID ContactNumber ContactStatus AccountNumber Name FirstName LastName EmailAddress SkypeUserName 
                  BankAccountDetails TaxNumber AccountsReceivableTaxType AccountsPayableTaxType
@@ -118,7 +118,7 @@ sub new
       $self->{Phones} = [];
       foreach my $phone ( @{$phones_list})
       {
-        push $self->{Phones}, WebService::Xero::Phone->new( $phone ) || return $self->_error('Failed to create Phone instance');
+        push @{$self->{Phones}}, WebService::Xero::Phone->new( $phone ) || return $self->_error('Failed to create Phone instance');
       }
     }
     if ( ref( $self->{Addresses} ) eq 'ARRAY' ) 
@@ -127,7 +127,7 @@ sub new
       $self->{Addresses} = [];
       foreach my $address ( @{$address_list})
       {
-        push $self->{Addresses}, WebService::Xero::Address->new( $address ) || return $self->_error('Failed to create Address instance');
+        push @{$self->{Addresses}}, WebService::Xero::Address->new( $address ) || return $self->_error('Failed to create Address instance');
       }
     }
 
@@ -455,7 +455,7 @@ L<https://developer.xero.com/documentation/api/contacts/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016-2017 Peter Scott.
+Copyright 2016-2018 Peter Scott.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a

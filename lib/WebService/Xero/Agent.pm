@@ -27,11 +27,11 @@ WebService::Xero::Agent - Base Class for API Connections
 
 =head1 VERSION
 
-Version 0.12
+Version 0.13
 
 =cut
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 
 =head1 SYNOPSIS
@@ -415,7 +415,7 @@ L<http://search.cpan.org/dist/CCP-Xero/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016-2017 Peter Scott.
+Copyright 2016-2018 Peter Scott.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a

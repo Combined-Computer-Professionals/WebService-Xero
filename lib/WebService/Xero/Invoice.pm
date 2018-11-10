@@ -12,11 +12,11 @@ WebService::Xero::Invoice - encapsulates a Xero API Invoice record
 
 =head1 VERSION
 
-Version 0.12
+Version 0.13
 
 =cut
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 our @PARAMS = qw/Date DueDate Status LineAmountTypes SubTotal TotalTax Total UpdatedDateUTC CurrencyCode Type InvoiceID InvoiceNumber AmountDue AmountPaid AmountCredited CurrencyRate/;
 
@@ -270,7 +270,7 @@ L<https://developer.xero.com/documentation/api/contacts/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2016-2017 Peter Scott.
+Copyright 2016-2018 Peter Scott.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a

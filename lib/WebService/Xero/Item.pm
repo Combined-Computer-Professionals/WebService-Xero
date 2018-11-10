@@ -13,11 +13,11 @@ WebService::Xero::Item - Object encapulates Item data returned by API
 
 =head1 VERSION
 
-Version 0.12
+Version 0.13
 
 =cut
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 our @PARAMS = qw/Name ItemID Code Description PurchaseDescription UpdatedDateUTC IsTrackedAsInventory InventoryAssetAccountCode TotalCostPool QuantityOnHand IsSold IsPurchased/;
 

@@ -14,7 +14,7 @@ points for Public, Private and in the future Partner application services.
 WebService::Xero modules primarily encapsulate the [OAuth (v1.0a) access control protocol as described by Cubrid](http://www.cubrid.org/blog/dev-platform/dancing-with-oauth-understanding-how-authorization-works/) .
 
 
-# Active Development Version 0.12 ahead of cPanel Version 0.11
+# Active Development Version 0.13 
 
 * Support for PUT REST commands with examples such for example to create new accounts as per [Xero Docs](https://developer.xero.com/documentation/api/accounts#PUT)
 * Supoprt for PDF handling
@@ -179,7 +179,7 @@ perldoc WebService::Xero::Contacts_Container
 LICENSE AND COPYRIGHT
 ----
 
-Copyright 2016-2017 Peter Scott.
+Copyright 2016-2018 Peter Scott.
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the the Artistic License (2.0). You may obtain a
